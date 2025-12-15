@@ -12,9 +12,10 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-
-
 const PORT = process.env.PORT || 5000
+
+import authRoutes from "./routes/authRoutes"
+import { report } from "node:process"
 
 
 const startServer = async () => {
@@ -28,8 +29,15 @@ const startServer = async () => {
   }
 }
 
+
+// app.use("/api/auth",authRoutes)
+// app.use("/api/users",userRoutes)
+// app.use("/api/tasks",taskRoutes)
+// app.use("/api/reports",reportRoutes)
+
+
+
+
 startServer()
 
-app.get("/", (req: Request, res: Response) => {
- res.status(200).json({ message: "Server is running" })
-})
+
