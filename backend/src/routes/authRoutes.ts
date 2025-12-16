@@ -1,10 +1,10 @@
 import { Router } from "express"
 import { Request, Response } from "express"
+import { login, register } from "../controllers/authController"
 
 const router = Router()
 
-router.get("/login",(req: Request, res: Response) => {
-    res.status(200).json({ message: "Login successful" })
-})
+router.post("/register",register)
+router.post("/login",login)
 
 export default router

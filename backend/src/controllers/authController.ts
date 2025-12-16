@@ -12,7 +12,7 @@ interface RegisterRequestBody {
     role?: "member" | "admin"
 }
 
-interface JWTPayload {
+export interface JWTPayload {
     id: string,
     email: string
 }
@@ -72,7 +72,8 @@ export const register = async (req: Request, res: Response) => {
             },
             token
         }
-
+        res.cookie("token", token, { httpOnly: true, 
+            secure: process.env.NODE_ENV === "production" });
         res.status(201).json(response)
     } catch (error){
         console.error("Registration error:", error);
@@ -135,6 +136,8 @@ export const login = async (req: Request, res: Response) => {
             },
             token
         }
+        res.cookie("token", token, { httpOnly: true, 
+            secure: process.env.NODE_ENV === "production" });
         res.status(200).json(response)
     } catch (error){
         console.error("Login error:", error);
