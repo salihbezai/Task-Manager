@@ -8,15 +8,19 @@ app.use(cors())
 app.use(express.json())
 
 
+import authRoutes from "./routes/authRoutes"
+import { report } from "node:process"
+import connectDb from "./config/db"
+
+
+
 import dotenv from "dotenv"
 
 dotenv.config()
 
 const PORT = process.env.PORT || 5000
 
-import authRoutes from "./routes/authRoutes"
-import { report } from "node:process"
-import connectDb from "./config/db"
+
 
 
 const startServer = async () => {
