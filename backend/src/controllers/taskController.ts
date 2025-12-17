@@ -91,4 +91,31 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
     }
 }
 
+// delete task 
+export const deleteTask = async (req: Request, res: Response): Promise<void> => {
+    const { id }  = req.params;
+    try {
+        const task = await Task.findById(id);
+        if (!task) {
+            res.status(404).json({ message: "Task not found" });
+            return;
+        }
+        // ownership check
+        if (task.createdBy?.toString() !== req.user?.id) {
+            res.status(403).json({ message: "You are not authorized to delete this task" });
+            return;
+        }
+       await Task.findByIdAndDelete(id);
+        res.status(200).json({ message: "Task deleted successfully" });
+    }catch (error) {
+                logger.error({
+                message: "Error deleting task",
+                error: (error as Error).message,
+                stack: (error as Error).stack,
+                route: req.originalUrl
+            })
+        res.status(500).json({ message: "Failed to delete task" });
+    }
+}
+
      
