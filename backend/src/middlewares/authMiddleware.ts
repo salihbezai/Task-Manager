@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { JWTPayload } from "../controllers/authController";
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+const JWT_SECRET = process.env.JWT_SECRET || "%%pea8401847§%£µouhfjemakncjfkgi";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) =>{
     const authHeader = req.headers?.authorization;
