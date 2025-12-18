@@ -29,8 +29,9 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
              res.status(400).json({message: "Title is required"})
              return;
         }
+
+        console.log("this object id "+req.user?.id)
         try {
-            throw new Error("Simulated error for testing logging");
               const task = new Task(
             {
             title,
@@ -119,3 +120,148 @@ export const deleteTask = async (req: Request, res: Response): Promise<void> => 
 }
 
      
+
+// get tasks
+export const getTasks = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const tasks = await Task.find();
+        res.status(200).json(tasks);
+    } catch (error) {
+        logger.error({
+            message: "Error fetching tasks",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Failed to fetch tasks" });
+    }
+}
+
+// get task by id 
+export const getTaskById = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    try {
+        const task = await Task.findById(id);
+        if (!task) {
+            res.status(404).json({ message: "Task not found" });
+            return;
+        }
+        res.status(200).json(task);
+    }catch (error) {
+        logger.error({
+            message: "Error fetching task by ID",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Failed to fetch task" });
+    }
+}
+
+// update task status
+export const updateTaskStatus = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const  { status } = req.body;
+    try {
+        const task = await Task.findById(id);
+        if (!task) {
+            res.status(404).json({ message: "Task not found" });
+            return;
+        }
+        // ownership check
+        if (task.createdBy?.toString() !== req.user?.id) {
+            res.status(403).json({ message: "You are not authorized to update this task" });
+            return;
+        }
+        task.status = status;
+        const updatedTask = await task.save()
+        res.status(200).json(updatedTask);
+    }catch (error) {
+        logger.error({
+            message: "Error updating task status",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Failed to update task status" });
+    }
+}
+
+// update task check list
+export const updateTaskCheckList = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { todos } = req.body;
+    try {
+        const task = await Task.findById(id);
+        if (!task) {
+            res.status(404).json({ message: "Task not found" });
+            return;
+        }
+        // ownership check
+        if (task.createdBy?.toString() !== req.user?.id) {
+            res.status(403).json({ message: "You are not authorized to update this task" });
+            return;
+        }
+        task.todos = todos;
+        const updatedTask = await task.save()
+        res.status(200).json(updatedTask);
+    }catch (error) {
+        logger.error({
+            message: "Error updating task checklist",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Failed to update task checklist" });
+    }
+}
+
+// get dashbaord data
+export const getDashboardData = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const totalTasks = await Task.countDocuments();
+        const completedTasks = await Task.countDocuments({ status: "completed" });
+        const pendingTasks = await Task.countDocuments({ status: "pending" });
+        const inProgressTasks = await Task.countDocuments({ status: "in-progress" });
+        res.status(200).json({
+            totalTasks,
+            completedTasks,
+            pendingTasks,
+            inProgressTasks
+        });
+
+    } catch (error) {
+        logger.error({
+            message: "Error fetching dashboard data",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Failed to fetch dashboard data" });
+    }
+}
+
+// get user dashbaord data
+export const getUserDashboardData = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.id;
+        const totalTasks = await Task.countDocuments({ createdBy: userId });
+        const completedTasks = await Task.countDocuments({ createdBy: userId, status: "completed" });
+        const pendingTasks = await Task.countDocuments({ createdBy: userId, status: "pending" });
+        const inProgressTasks = await Task.countDocuments({ createdBy: userId, status: "in-progress" });
+        res.status(200).json({
+            totalTasks,
+            completedTasks,
+            pendingTasks,
+            inProgressTasks
+        });
+    } catch (error) {
+        logger.error({
+            message: "Error fetching user dashboard data",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Failed to fetch user dashboard data" });
+    }
+}

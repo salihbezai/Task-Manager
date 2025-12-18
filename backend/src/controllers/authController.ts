@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import { User } from "../models/User"
 import jwt from "jsonwebtoken"
 import dotenv from 'dotenv';
+import { logger } from "../utility";
 
 dotenv.config();
 
@@ -12,12 +13,14 @@ interface RegisterRequestBody {
     name: string,
     email: string,
     password: string,
+    profileImageUrl?: string,
     role?: "member" | "admin"
 }
 
 export interface JWTPayload {
     id: string,
-    email: string
+    email: string,
+    role: "member" | "admin"
 }
 
 interface RegisterResponse {
@@ -25,6 +28,7 @@ interface RegisterResponse {
         id: string,
         name: string,
         email: string,
+        profileImageUrl?: string,
         role: "member" | "admin"
     },
     token: string
@@ -53,6 +57,7 @@ export const register = async (req: Request, res: Response) => {
             name,
             email,
             password: hashedPassword,
+            profileImageUrl: req.body.profileImageUrl || null,
             role: role || "member"
         })
 
@@ -60,7 +65,8 @@ export const register = async (req: Request, res: Response) => {
         const token = jwt.sign(
             {
             id: newUser._id.toString(),
-            email
+            email,
+            role: newUser.role
            } as JWTPayload,
          JWT_SECRET, 
          { expiresIn: "7d" })
@@ -71,6 +77,7 @@ export const register = async (req: Request, res: Response) => {
                 id: newUser._id.toString(),
                 name: newUser.name,
                 email: newUser.email,
+                profileImageUrl: newUser.profileImageUrl,
                 role: newUser.role
             },
             token
@@ -95,6 +102,7 @@ interface LoginResponse {
         id: string,
         name: string,
         email: string,
+        profileImageUrl?: string,
         role: "member" | "admin"
     },
     token: string
@@ -124,7 +132,8 @@ export const login = async (req: Request, res: Response) => {
         const token = jwt.sign(
             {
             id: user._id.toString(),
-            email
+            email,
+            role: user.role
            } as JWTPayload,
          JWT_SECRET, 
          { expiresIn: "7d" })
@@ -135,15 +144,79 @@ export const login = async (req: Request, res: Response) => {
                 id: user._id.toString(),
                 name: user.name,
                 email: user.email,
+                profileImageUrl: user.profileImageUrl,
                 role: user.role
             },
             token
         }
         res.cookie("token", token, { httpOnly: true, 
             secure: process.env.NODE_ENV === "production" });
+            console.log("the token body "+ JSON.stringify(
+                 {
+            id: user._id.toString(),
+            email,
+            role: user.role
+           } 
+            ))
         res.status(200).json(response)
+
     } catch (error){
         console.error("Login error:", error);
         res.status(500).json({ message: "Server error during login." });
+    }
+}
+
+
+// get user profile 
+export const getUserProfile = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+        res.status(200).json({
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            profileImageUrl: user.profileImageUrl,
+            role: user.role
+        });
+    } catch (error) {
+        logger.error({
+            message: "Error getting user profile",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Server error getting user profile." });
+    }
+}
+
+// update user profile
+export const updateUserProfile = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        const updateData = req.body as Partial<RegisterRequestBody>;
+       
+        const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+        res.status(200).json({
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            profileImageUrl: user.profileImageUrl,
+            role: user.role
+        });
+    } catch (error) {
+        logger.error({
+            message: "Error updating user profile",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        });
+        res.status(500).json({ message: "Server error updating user profile." });
     }
 }
