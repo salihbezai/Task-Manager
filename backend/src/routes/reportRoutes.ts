@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { adminOnly, protect } from '../middlewares/authMiddleware';
-import { exportTaskReport } from '../controllers/reportController';
+import { exportTaskReport, exportUserReport } from '../controllers/reportController';
 
 const router = Router();
 
@@ -8,5 +8,5 @@ const router = Router();
 router.get('/export/tasks', protect, adminOnly,exportTaskReport);
 
 // export user report
-    // router.get('/export/users', protect, adminOnly, exportUserReport);
+    router.get('/export/users', protect, adminOnly, exportUserReport);
 export default router;

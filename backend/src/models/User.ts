@@ -7,6 +7,8 @@ export interface IUser {
     password: string;
     profileImageUrl?: string;
     role: "member" | "admin";
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 
