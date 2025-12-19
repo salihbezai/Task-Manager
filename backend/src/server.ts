@@ -10,13 +10,14 @@ app.use(express.json())
 
 import authRoutes from "./routes/authRoutes"
 import taskRoutes from "./routes/taskRoutes"
-import { report } from "node:process"
+import reportRoutes from "./routes/reportRoutes"
 import connectDb from "./config/db"
 
 
 
 import dotenv from "dotenv"
 import { protect } from './middlewares/authMiddleware';
+import Task from "./models/Task"
 
 dotenv.config()
 
@@ -41,11 +42,13 @@ const startServer = async () => {
  app.use("/api/auth",authRoutes)
 // app.use("/api/users",userRoutes)
  app.use("/api/tasks",protect,taskRoutes)
-// app.use("/api/reports",reportRoutes)
+ app.use("/api/reports",reportRoutes)
 
 
 
 
 startServer()
+
+
 
 
