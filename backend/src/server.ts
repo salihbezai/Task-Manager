@@ -11,6 +11,7 @@ app.use(express.json())
 import authRoutes from "./routes/authRoutes"
 import taskRoutes from "./routes/taskRoutes"
 import reportRoutes from "./routes/reportRoutes"
+import userRoutes from "./routes/userRoutes"
 import connectDb from "./config/db"
 
 
@@ -40,9 +41,9 @@ const startServer = async () => {
 
 
  app.use("/api/auth",authRoutes)
-// app.use("/api/users",userRoutes)
- app.use("/api/tasks",protect,taskRoutes)
- app.use("/api/reports",protect,reportRoutes)
+ app.use("/api/users",userRoutes)
+ app.use("/api/tasks",taskRoutes)
+ app.use("/api/reports",reportRoutes)
 
 
 

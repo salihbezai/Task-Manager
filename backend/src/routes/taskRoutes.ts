@@ -3,38 +3,38 @@ import { createTask, deleteTask,
     getDashboardData, getTaskById, getTasks,
      getUserDashboardData, updateTask, 
      updateTaskCheckList, updateTaskStatus } from "../controllers/taskController";
-import { adminOnly } from "../middlewares/authMiddleware";
+import { adminOnly, protect } from '../middlewares/authMiddleware';
 
 
 const router = Router()
 
 // dashboard data
-router.get("/dashboard-data",getDashboardData)
+router.get("/dashboard-data",protect,getDashboardData)
 
 // user dashboard data
-router.get("/user-dashboard-data",getUserDashboardData)
+router.get("/user-dashboard-data",protect,getUserDashboardData)
 
 
 // create task
-router.post("/create",adminOnly,createTask)
+router.post("/create",protect,adminOnly,createTask)
 
 // get tasks
-router.get("/",adminOnly,getTasks)
+router.get("/",protect,adminOnly,getTasks)
 
 // get task by id 
-router.get("/:id",getTaskById)
+router.get("/:id",protect,getTaskById)
 
 // update task
-router.put("/update/:id", updateTask)
+router.put("/update/:id", protect,updateTask)
 
 // delete task 
-router.delete("/delete/:id",adminOnly,deleteTask)
+router.delete("/delete/:id",protect,adminOnly,deleteTask)
 
 // update task status
-router.put("/:id/status",updateTaskStatus)
+router.put("/:id/status",protect,updateTaskStatus)
 
 // update task check list
-router.put("/:id/todo",updateTaskCheckList)
+router.put("/:id/todo",protect,updateTaskCheckList)
 
 
 
