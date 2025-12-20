@@ -27,4 +27,5 @@ if(allowedFileTypes.includes(file.mimetype)){
     storage, fileFilter
 })
 
-module.exports = upload;
+export default upload;
+
