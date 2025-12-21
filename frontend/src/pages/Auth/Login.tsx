@@ -2,7 +2,7 @@ import React, {  useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../../store/store';
 import { loginUser } from '../../featuers/auth/authActions';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { clearError } from '../../featuers/auth/authSlice';
 
 const Login = () => {
@@ -123,6 +123,14 @@ const Login = () => {
         {loginLoading ? "Logging in..." : "Login"}
       </button>
     </form>
+    <div className="text-center mt-6">
+      <p className="text-gray-600">
+        Don't have an account?{" "}
+        <Link to="/signup" className="text-blue-600 hover:underline">
+          Sign up
+        </Link>
+      </p>
+    </div>
   </div>
 </div>
 

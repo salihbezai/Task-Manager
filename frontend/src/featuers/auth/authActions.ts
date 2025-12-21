@@ -28,4 +28,25 @@ const loginUser = createAsyncThunk(
     }
 )
 
-export { fetchCurrentUser, loginUser };
+
+// signup
+const registerUser = createAsyncThunk(
+    'auth/signupUser',
+    async (credentials: { 
+        name: string;
+        email: string;
+        password: string;
+        profileImageUrl?: string;
+        inviteToken: string
+        }, { rejectWithValue }) => {
+        try {
+            const { data } = await api.post('/auth/register', credentials);
+            return data;
+        } catch (error) {
+          return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+)
+
+
+export { fetchCurrentUser, loginUser, registerUser };

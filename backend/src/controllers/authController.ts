@@ -14,7 +14,7 @@ interface RegisterRequestBody {
     email: string,
     password: string,
     profileImageUrl?: string,
-    role?: "member" | "admin"
+    inviteToken?: string
 }
 
 export interface JWTPayload {
@@ -32,7 +32,8 @@ interface RegisterResponse {
 }
 
 export const register = async (req: Request, res: Response) => {
-    const { name, email, password, role } = req.body as RegisterRequestBody;
+    const { name, email, password,inviteToken } = req.body as RegisterRequestBody;
+    console.log("it runssssssssss "+req.body)
 
     // validate required fields
     if (!name || !email || !password) {
@@ -48,6 +49,17 @@ export const register = async (req: Request, res: Response) => {
         // hash password 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt)
+
+        let role : "admin" | "member"  = "member";
+        // check the invite token admin
+        if(inviteToken){
+            if(inviteToken === process.env.INVITE_TOKEN) {
+            role = "admin";
+        } else{
+            return res.status(400).json({ message: "Invalid invite token." });
+        }
+        }
+      
 
         // create new user
         const newUser = await User.create({

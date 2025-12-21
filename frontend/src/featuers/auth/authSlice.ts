@@ -15,6 +15,8 @@ interface AuthState {
     error: null | string;
     loginError: null | string;
     loginLoading: boolean;
+    registerError: null | string;
+    registerLoading: boolean
 
 }
 
@@ -24,7 +26,9 @@ interface AuthState {
         loading: false,
         error: null,
         loginError: null,
-        loginLoading: false
+        loginLoading: false,
+        registerError: null,
+        registerLoading: false
     }
 
     
@@ -32,9 +36,16 @@ interface AuthState {
         name: "auth",
         initialState,
         reducers: { 
-          clearError(state) { 
+         
+          clearLoginError(state) { 
             state.loginError = null;
-          }
+          },
+          clearRegisterError(state) { 
+            state.registerError = null;
+          },
+          clearError(state) { 
+            state.error = null;
+          },
         },
         extraReducers: (builder) => {
            // fetch current user 
@@ -66,6 +77,23 @@ interface AuthState {
                     state.loginLoading = false;
                     state.loginError = action.payload;
                   })
+
+                  // Signup
+                  builder.addCase('auth/signupUser/pending', (state) => {
+                    state.registerLoading = true;
+                    state.registerError = null;
+                   })
+                      builder.addCase('auth/signupUser/fulfilled', (state, action: PayloadAction<userType>) => {
+                        state.registerLoading = false;
+                        state.user = action.payload;
+                        state.registerError = null;
+                      })
+                      builder.addCase('auth/signupUser/rejected', (state, action: PayloadAction<string>) => {
+                        state.registerLoading = false;
+                        state.registerError = action.payload;
+                      })
+
+
         }
     })
 
@@ -73,5 +101,5 @@ interface AuthState {
     
 
 
-export const { clearError } = authSlice.actions;
+export const { clearLoginError, clearRegisterError, clearError } = authSlice.actions;
 export default authSlice.reducer;
