@@ -2,13 +2,12 @@ import { Router } from "express"
 import { getUserProfile, login, register, updateUserProfile } from "../controllers/authController"
 import { protect } from "../middlewares/authMiddleware"
 import upload from "../middlewares/uploadMiddleware"
-import { Logger } from "winston"
 import { logger } from "../utility"
 const router = Router()
 
 router.post("/register",register)
 router.post("/login",login)
-router.get("/profile",protect,getUserProfile)
+router.get("/me",getUserProfile)
 router.put("/profile",protect,updateUserProfile)
 
 router.post("/upload-image",upload.single('image'), (req, res) => {

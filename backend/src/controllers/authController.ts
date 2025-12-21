@@ -24,14 +24,11 @@ export interface JWTPayload {
 }
 
 interface RegisterResponse {
-    user: {
         id: string,
         name: string,
         email: string,
         profileImageUrl?: string,
         role: "member" | "admin"
-    },
-    token: string
 }
 
 export const register = async (req: Request, res: Response) => {
@@ -73,20 +70,22 @@ export const register = async (req: Request, res: Response) => {
 
         // respond with user data and token
         const response : RegisterResponse = {
-            user:{
                 id: newUser._id.toString(),
                 name: newUser.name,
                 email: newUser.email,
                 profileImageUrl: newUser.profileImageUrl,
                 role: newUser.role
-            },
-            token
         }
         res.cookie("token", token, { httpOnly: true, 
             secure: process.env.NODE_ENV === "production" });
         res.status(201).json(response)
     } catch (error){
-        console.error("Registration error:", error);
+            logger.error({
+            message: "Error during registration",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
         res.status(500).json({ message: "Server error during registration." });
     }
 }
@@ -98,14 +97,11 @@ interface LoginRequestBody {
 }
 
 interface LoginResponse {
-    user: {
         id: string,
         name: string,
         email: string,
         profileImageUrl?: string,
         role: "member" | "admin"
-    },
-    token: string
 }
 
 
@@ -140,28 +136,24 @@ export const login = async (req: Request, res: Response) => {
 
         // respond with user data and token
         const response: LoginResponse = {
-            user:{
                 id: user._id.toString(),
                 name: user.name,
                 email: user.email,
                 profileImageUrl: user.profileImageUrl,
                 role: user.role
-            },
-            token
         }
         res.cookie("token", token, { httpOnly: true, 
             secure: process.env.NODE_ENV === "production" });
-            console.log("the token body "+ JSON.stringify(
-                 {
-            id: user._id.toString(),
-            email,
-            role: user.role
-           } 
-            ))
+      
         res.status(200).json(response)
 
     } catch (error){
-        console.error("Login error:", error);
+             logger.error({
+            message: "Error during login",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
         res.status(500).json({ message: "Server error during login." });
     }
 }
@@ -171,6 +163,7 @@ export const login = async (req: Request, res: Response) => {
 export const getUserProfile = async (req: Request, res: Response) => {
     try {
         const userId = req.user?.id;
+        console.log("this runs "+userId)
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found." });

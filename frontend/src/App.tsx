@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import Login from './pages/Auth/Login'
@@ -14,8 +14,17 @@ import ManageUsers from './pages/Admin/ManageUsers'
 import UserDashboard from './pages/User/UserDashboard'
 import MyTasks from './pages/User/MyTasks'
 import ViewTaskDetails from './pages/User/ViewTaskDetails'
+import { useDispatch } from 'react-redux'
+import { fetchCurrentUser } from './featuers/auth/authActions'
+import type { AppDispatch } from './store/store'
 
-function App() {
+
+const App=()=> {
+  const dispatch = useDispatch<AppDispatch>(); 
+
+  useEffect(()=> {
+    dispatch(fetchCurrentUser());
+  },[dispatch])
 
   return (
   <div>

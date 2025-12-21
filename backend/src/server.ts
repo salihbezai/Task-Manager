@@ -1,11 +1,6 @@
 import express from "express"
-import { Request, Response } from "express"
 import cors from "cors"
-
-const app = express()
-
-app.use(cors())
-app.use(express.json())
+import cookieParser from "cookie-parser"
 
 
 import authRoutes from "./routes/authRoutes"
@@ -16,9 +11,21 @@ import connectDb from "./config/db"
 
 
 
+const app = express()
+
+app.use(express.json())
+app.use(cookieParser());
+
+app.use(cors({
+  origin: "http://localhost:5173",   // your frontend URL
+  credentials: true,                 // allow cookies
+}));
+
+
+
+
+
 import dotenv from "dotenv"
-import { protect } from './middlewares/authMiddleware';
-import Task from "./models/Task"
 
 dotenv.config()
 
