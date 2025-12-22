@@ -33,7 +33,7 @@ interface RegisterResponse {
 
 export const register = async (req: Request, res: Response) => {
     const { name, email, password,inviteToken } = req.body as RegisterRequestBody;
-    console.log("it runssssssssss "+req.body)
+    console.log("the invitetoken "+inviteToken)
 
     // validate required fields
     if (!name || !email || !password) {
@@ -53,7 +53,7 @@ export const register = async (req: Request, res: Response) => {
         let role : "admin" | "member"  = "member";
         // check the invite token admin
         if(inviteToken){
-            if(inviteToken === process.env.INVITE_TOKEN) {
+            if(inviteToken === process.env.ADMIN_INVITE_TOKEN) {
             role = "admin";
         } else{
             return res.status(400).json({ message: "Invalid invite token." });

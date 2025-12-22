@@ -13,9 +13,9 @@ const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
     return <div>Loading...</div>
   }
 
-  if(!user || !allowedRoles.includes(user.role)){
-    return <Navigate to='/login' />
-  }
+  // if(!user || !allowedRoles.includes(user.role)){
+  //   return <Navigate to='/login' />
+  // }
 
  return <Outlet />
 }
