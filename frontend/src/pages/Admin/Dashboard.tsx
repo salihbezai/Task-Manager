@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import Navbar from '../../components/Navbar'
-import Sidebar from '../../components/Admin/Sidebar'
+import Navbar from '../../components/layout/Navbar'
+import Sidebar from '../../components/layout/Sidebar'
 
 const Dashboard = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -8,7 +8,7 @@ const Dashboard = () => {
     <div>
 
       {/* header  */}
-      <Navbar toggleSidebar={() => setIsOpen((prev)=> !prev)}  />
+      <Navbar toggleSidebar={() => setIsOpen((prev)=> !prev)} isOpen={isOpen}  />
 
       {/* content  */}
       <div className='flex pt-16'>
@@ -20,10 +20,14 @@ const Dashboard = () => {
 
         {/* main content */}
 
-        <div className={`w-full transition-all duration-300
-           bg-red-400 ${isOpen ? "ml-64" : "ml-0"}`}>
-          <h1>The Content</h1>
-        </div>
+<div
+  className={`w-full transition-all duration-300 bg-red-400
+   
+    md:ml-64
+  `}
+>
+  <h1>The Content</h1>
+</div>
       </div>
      
       
