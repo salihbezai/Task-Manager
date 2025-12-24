@@ -4,7 +4,7 @@ import { IoClose } from "react-icons/io5";
 const Navbar = ({ toggleSidebar,isOpen }: { toggleSidebar: () => void, isOpen: boolean }) => {
   return (
     <header className="fixed top-0 left-0 right-0 h-16 flex items-center
-     justify-between px-4 bg-white shadow z-50">
+     justify-between px-4 bg-white shadow-sm z-50">
       <h2 className="text-2xl font-bold">Task Manager</h2>
 
       <button className="md:hidden" onClick={toggleSidebar}>

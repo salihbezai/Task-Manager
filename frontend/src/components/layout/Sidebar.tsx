@@ -19,10 +19,10 @@ const Sidebar = ({
   const location = useLocation();
 
   const adminMenu = [
-    { label: "Dashboard", path: "/dashboard", icon: <MdDashboard size={20} /> },
-    { label: "Manage Tasks", path: "/tasks/manage", icon: <MdTask size={20} /> },
-    { label: "Create Task", path: "/tasks/create", icon: <MdAddTask size={20} /> },
-    { label: "Team Members", path: "/team", icon: <MdGroup size={20} /> },
+    { label: "Dashboard", path: "/admin/dashboard", icon: <MdDashboard size={20} /> },
+    { label: "Manage Tasks", path: "/admin/tasks", icon: <MdTask size={20} /> },
+    { label: "Create Task", path: "/admin/create-task", icon: <MdAddTask size={20} /> },
+    { label: "Team Members", path: "/admin/users", icon: <MdGroup size={20} /> },
   ];
 
   const userMenu = [
@@ -37,11 +37,13 @@ const Sidebar = ({
     <>
       <aside
         className={`
-          fixed top-16 left-0 h-screen shadow-lg
+          fixed top-16 left-0 h-screen shadow-sm
           transition-all duration-300 z-50
           w-64 bg-white
           md:translate-x-0
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+           border-t  border-r border-gray-200
+          
         `}
       >
         <div className="p-4">
