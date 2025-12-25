@@ -81,7 +81,7 @@ const Sidebar = ({
                     transition
                     ${isActive
                       ? "bg-blue-600 text-white"
-                      : "text-gray-800 hover:bg-blue-600 hover:text-white"}
+                      : "text-gray-800 hover:bg-gray-300 hover:text-gray-900"}
                   `}
                 >
                   {item.icon}
