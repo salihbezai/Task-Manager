@@ -14,7 +14,7 @@ import ManageUsers from './pages/Admin/ManageUsers'
 import UserDashboard from './pages/User/UserDashboard'
 import MyTasks from './pages/User/MyTasks'
 import ViewTaskDetails from './pages/User/ViewTaskDetails'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { fetchCurrentUser } from './featuers/auth/authActions'
 import type { AppDispatch } from './store/store'
 import AdminLayout from './components/layout/AdminLayout'
@@ -23,8 +23,10 @@ import UserLayout from './components/layout/UserLayout'
 
 const App=()=> {
   const dispatch = useDispatch<AppDispatch>(); 
+  const { user } = useSelector((state: RootState)=> state.auth);
 
   useEffect(()=> {
+    console.log("it runs ")
     dispatch(fetchCurrentUser());
   },[dispatch])
 

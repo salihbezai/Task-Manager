@@ -6,17 +6,17 @@ import {
   MdAddTask,
   MdLogout,
 } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 const Sidebar = ({
   isOpen,
   setIsOpen,
-  role = "Admin",
 }: {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  role?: "Admin" | "Member";
 }) => {
   const location = useLocation();
+  const { user } = useSelector((state: any) => state.auth);
 
   const adminMenu = [
     { label: "Dashboard", path: "/admin/dashboard", icon: <MdDashboard size={20} /> },
@@ -31,7 +31,7 @@ const Sidebar = ({
     { label: "Profile", path: "/profile", icon: <MdGroup size={20} /> },
   ];
 
-  const menu = role === "Admin" ? adminMenu : userMenu;
+  const menu = user?.role === "admin" ? adminMenu : userMenu;
 
   return (
     <>
@@ -58,12 +58,12 @@ const Sidebar = ({
               px-2 py-1 text-xs font-medium 
               bg-blue-600 text-white rounded-md"
             >
-              {role === "Admin" ? "Admin" : "Member"}
+              {user?.role}
             </div>
 
             <div className="mt-2 flex flex-col items-center">
-              <h1 className="text-lg font-semibold text-gray-900">Salih</h1>
-              <p className="text-sm text-gray-500">salih@gmail.com</p>
+              <h1 className="text-lg font-semibold text-gray-900"> {user?.name}</h1>
+              <p className="text-sm text-gray-500"> {user?.email}</p>
             </div>
           </div>
 

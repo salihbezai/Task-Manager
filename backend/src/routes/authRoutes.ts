@@ -7,7 +7,7 @@ const router = Router()
 
 router.post("/register",register)
 router.post("/login",login)
-router.get("/me",getUserProfile)
+router.get("/me",protect,getUserProfile)
 router.put("/profile",protect,updateUserProfile)
 
 router.post("/upload-image",upload.single('image'), (req, res) => {

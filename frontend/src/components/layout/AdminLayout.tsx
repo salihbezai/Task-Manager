@@ -15,7 +15,7 @@ export default function AdminLayout() {
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
         <main
-          className={`w-full transition-all duration-300 bg-red-400
+          className={`w-full transition-all duration-300 bg-gray-100
             md:ml-64`}
         >
           <Outlet />  
