@@ -230,6 +230,7 @@ export const getDashboardData = async (req: Request, res: Response): Promise<voi
             inProgressTasks
         });
 
+
     } catch (error) {
         logger.error({
             message: "Error fetching dashboard data",

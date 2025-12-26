@@ -26,7 +26,6 @@ const App=()=> {
   const { user } = useSelector((state: RootState)=> state.auth);
 
   useEffect(()=> {
-    console.log("it runs ")
     dispatch(fetchCurrentUser());
   },[dispatch])
 
