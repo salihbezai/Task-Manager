@@ -2,34 +2,12 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 
 
-// interface ITask 
-// interface ITask {
-//     title: string;
-//     description?: string;
-//     priority?: "low" | "medium" | "high";
-//     status: "pending" | "in-progress" | "completed";
-//     dueDate?: Date;
-//     assignedTo?: mongoose.Types.ObjectId[];
-//     createdBy?: mongoose.Types.ObjectId;
-//     attachments?: string[];
-//     todos: { text: string; completed: boolean }[];
-//     text: string;
-//     completed: boolean;
-//     progress: number;
-// }
+
 // interface taskState {
-interface TaskStatus {
-    totalTasks: number;
-    completedTasks: number;
-    pendingTasks: number;
-    inProgressTasks: number;
-    tasks: ITask[],
-    error: string | null,
-    loading: boolean
-}
 
 
-    const initialState: TaskStatus = {
+
+    const initialState = {
         totalTasks: 0,
         completedTasks: 0,
         pendingTasks: 0,
@@ -73,7 +51,7 @@ interface TaskStatus {
                })
                   builder.addCase('task/fetchAllTasks/fulfilled', (state, action: PayloadAction<userType>) => {
                     state.loading = false;
-
+                    state.tasks = action.payload;
                     state.error = null;
                   })
                   builder.addCase('task/fetchAllTasks/rejected', (state, action: PayloadAction<string>) => {

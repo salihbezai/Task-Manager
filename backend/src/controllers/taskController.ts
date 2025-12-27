@@ -124,7 +124,9 @@ export const deleteTask = async (req: Request, res: Response): Promise<void> => 
 // get tasks
 export const getTasks = async (req: Request, res: Response): Promise<void> => {
     try {
-        const tasks = await Task.find();
+        const tasks = await Task.find()
+        .populate("createdBy", "name email profileImageUrl")
+        .populate("assignedTo", "name email profileImageUrl");
         res.status(200).json(tasks);
     } catch (error) {
         logger.error({

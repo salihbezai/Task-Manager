@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import path from "path";
 
 
 import authRoutes from "./routes/authRoutes"
@@ -22,10 +23,11 @@ app.use(cors({
 }));
 
 
-
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 
 import dotenv from "dotenv"
+import path from "path"
 
 dotenv.config()
 
