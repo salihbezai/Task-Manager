@@ -73,7 +73,7 @@ const Dashboard = () => {
       {/* Greeting */}
       <div>
         <h1 className="text-2xl font-bold">
-          Good Morning, <span className="text-blue-600">{user?.name}</span> 👋
+          Hello Mr, <span className="text-blue-600">{user?.name}</span> 👋
         </h1>
         <p className="text-gray-500 text-sm">
           {new Date().toDateString()}
@@ -150,11 +150,11 @@ const Dashboard = () => {
             <thead>
               <tr className="text-left text-gray-600">
                 <th className="py-2">Task</th>
-                <th>Assigned To</th>
-                <th>CreatedBy</th>
+                {/* <th>Assigned To</th> */}
+                {/* <th>CreatedBy</th> */}
                 <th>Status</th>
                 <th>Priority</th>
-                <th>Due</th>
+                <th>Created On</th>
               </tr>
             </thead>
 
@@ -162,18 +162,18 @@ const Dashboard = () => {
               {paginatedTasks.map((t: any, i: number) => (
                 <tr key={i} className="border-b last:border-none hover:bg-gray-50">
                   <td className="py-2">{t.title}</td>
-                  <td className="flex flex-row items-center justify-center ">
+                  {/* <td className="flex py-2 flex-row items-center justify-center space-between gap-1">
                     {
                       t.assignedTo?.map((a: any, i: number) => (
-                        <div key={i} className="mr-1 cursor-pointer">
+                        <div key={i} className="flex flex-row items-center cursor-pointer">
                           <img src={`http://localhost:5000/uploads/${a.profileImageUrl}`}
                            alt={a.name} className="w-8 h-8 rounded-full cursor-pointer" />
                         </div>
                       ))
                     }
-                  </td>
-                  <td>{t.createdBy?.name}</td>
-                  <td>
+                  </td> */}
+                  {/* <td className="py-2">{t.createdBy?.name}</td> */}
+                  <td className="py-2">
                     <span className={`px-2 py-1 rounded text-xs
                       ${t.status === "completed"
                         ? "bg-green-300 text-green-900 font-bold"
@@ -185,7 +185,7 @@ const Dashboard = () => {
                     </span>
                   </td>
 
-                  <td>
+                  <td className="py-2">
                     <span className={`px-2 py-1 rounded text-xs
                       ${t.priority === "high"
                         ? "bg-red-300 text-red-900 font-bold"
@@ -196,8 +196,7 @@ const Dashboard = () => {
                       {t.priority}
                     </span>
                   </td>
-
-                  <td>{t.dueDate ? new Date(t.dueDate).toDateString() : "—"}</td>
+                  <td className="py-2">{t.createdAt ? new Date(t.createdAt).toDateString() : "—"}</td>
                 </tr>
               ))}
             </tbody>
