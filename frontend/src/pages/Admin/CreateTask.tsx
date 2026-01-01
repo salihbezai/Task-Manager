@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/store";
+import { MdAdd, MdAttachment, MdGroupAdd } from "react-icons/md";
 // import { createTask } from "../../featuers/task/taskActions";
 
 const CreateTask = () => {
@@ -12,31 +13,19 @@ const CreateTask = () => {
     priority: "medium",
     status: "pending",
     dueDate: "",
+    assignedTo: [],
+    todos: [],
+    attachments: []
   });
 
-  const [attachments, setAttachments] = useState<File[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    setAttachments([...e.target.files]);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("title", task.title);
-    formData.append("description", task.description);
-    formData.append("priority", task.priority);
-    formData.append("status", task.status);
-    formData.append("dueDate", task.dueDate);
-
-    attachments.forEach((file) => formData.append("attachments", file));
-
     // await dispatch(createTask(formData));
   };
 
@@ -54,7 +43,7 @@ const CreateTask = () => {
             value={task.title}
             onChange={handleChange}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded focus:outline-none"
             placeholder="Enter task title"
           />
         </div>
@@ -66,7 +55,7 @@ const CreateTask = () => {
             name="description"
             value={task.description}
             onChange={handleChange}
-            className="w-full p-2 border rounded h-24"
+            className="w-full p-2 border rounded h-24 focus:outline-none"
             placeholder="Task details..."
           ></textarea>
         </div>
@@ -79,7 +68,7 @@ const CreateTask = () => {
               name="priority"
               value={task.priority}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded focus:outline-none"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -93,7 +82,7 @@ const CreateTask = () => {
               name="status"
               value={task.status}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded focus:outline-none"
             >
               <option value="pending">Pending</option>
               <option value="in-progress">In-Progress</option>
@@ -103,27 +92,78 @@ const CreateTask = () => {
         </div>
 
         {/* Due Date */}
-        <div>
+        <div className="grid grid-cols-2 gap-4">
+        <div className="">
           <label className="block font-medium mb-1">Due Date</label>
           <input
             type="date"
             name="dueDate"
             value={task.dueDate}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded focus:outline-none"
           />
+        </div>
+        {/* Assigned To */}
+        <div>
+          <label className="block font-medium mb-1">Assign To</label>
+          <button className="flex items-center py-2 px-2 rounded gap-2 bg-gray-200 cursor-pointer">
+            <MdGroupAdd size={20}/>
+            Add Members
+          </button>
+        </div>
+        </div>
+
+     
+
+        {/* Todos */}
+        <div>
+        <label className="block font-medium mb-1">Todos Checklist</label>
+        <div className="flex items-center ">
+          <input
+          type="text"
+          name="todos"
+          value={task.todos}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mr-1 focus:outline-none"
+          placeholder="Enter task"
+        />
+          <button className="flex items-center py-2 px-2
+           rounded gap-2 bg-gray-200 cursor-pointer">
+          <MdAdd size={20}/>
+          Add
+        </button>
+        </div>
         </div>
 
         {/* Attachments */}
-        <div>
-          <label className="block font-medium mb-1">Attachments</label>
-          <input type="file" multiple onChange={handleFileChange} />
+      <div>
+        <label className="block font-medium mb-1">Attachments</label>
+        <div className="flex items-center ">
+        <div className="flex items-center w-full px-2 border rounded mr-1">
+          <MdAttachment color="grey" size={20}/>
+        <input
+          type="text"
+          name="attachments"
+          value={task.attachments}
+          onChange={handleChange}
+          placeholder="Add File Link"
+          className="w-full p-2 rounded focus:outline-none"
+          />
+        </div>
+    
+          <button className="flex items-center py-2 px-2
+           rounded gap-2 bg-gray-200 cursor-pointer">
+          <MdAdd size={20}/>
+          Add
+        </button>
+        </div>
         </div>
 
         {/* Submit */}
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4
+           py-2 rounded hover:bg-blue-700 cursor-pointer"
         >
           Create Task
         </button>
