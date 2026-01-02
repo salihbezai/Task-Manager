@@ -124,7 +124,7 @@ const CreateTask = () => {
           name="todos"
           value={task.todos}
           onChange={handleChange}
-          className="w-full p-2 border rounded mr-1 focus:outline-none"
+          className="w-2/3 p-2 border rounded mr-3 focus:outline-none"
           placeholder="Enter task"
         />
           <button className="flex items-center py-2 px-2
@@ -139,7 +139,7 @@ const CreateTask = () => {
       <div>
         <label className="block font-medium mb-1">Attachments</label>
         <div className="flex items-center ">
-        <div className="flex items-center w-full px-2 border rounded mr-1">
+        <div className="w-2/3 flex items-center  px-2 border rounded mr-3">
           <MdAttachment color="grey" size={20}/>
         <input
           type="text"
@@ -147,7 +147,7 @@ const CreateTask = () => {
           value={task.attachments}
           onChange={handleChange}
           placeholder="Add File Link"
-          className="w-full p-2 rounded focus:outline-none"
+          className="w-2/3 p-2 rounded focus:outline-none"
           />
         </div>
     
