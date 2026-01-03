@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../store/store";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../store/store";
 import { MdAdd, MdAttachment, MdGroupAdd } from "react-icons/md";
+import AssignUsersModal from "../../components/Modals/AssignUserModal";
+import { fetchUsers } from "../../featuers/user/userActions";
 // import { createTask } from "../../featuers/task/taskActions";
 
 const CreateTask = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { users } = useSelector((state: RootState) => state.user);
 
   const [task, setTask] = useState({
     title: "",
@@ -18,8 +21,11 @@ const CreateTask = () => {
     attachments: []
   });
 
+  const [showAssignModal, setShowAssignModal] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
+    | HTMLTextAreaElement>) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
@@ -27,7 +33,15 @@ const CreateTask = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // await dispatch(createTask(formData));
+    console.log("the task right now is "+JSON.stringify(task))
   };
+
+  // fetch the users
+  useEffect(() => {
+     dispatch(fetchUsers());
+  }, [dispatch]);
+
+ 
 
   return (
     <div className="p-6">
@@ -106,7 +120,12 @@ const CreateTask = () => {
         {/* Assigned To */}
         <div>
           <label className="block font-medium mb-1">Assign To</label>
-          <button className="flex items-center py-2 px-2 rounded gap-2 bg-gray-200 cursor-pointer">
+          <button 
+          type="button"
+          className="flex items-center py-2 px-2 rounded gap-2
+           bg-gray-200 cursor-pointer"
+           onClick={()=> setShowAssignModal(true)}
+           >
             <MdGroupAdd size={20}/>
             Add Members
           </button>
@@ -168,6 +187,19 @@ const CreateTask = () => {
           Create Task
         </button>
       </form>
+      {showAssignModal && (
+  <AssignUsersModal
+    users={users}
+    selectedUsers={task.assignedTo}
+    onClose={() => setShowAssignModal(false)}
+    onDone={(ids) => {
+       setTask({ ...task, assignedTo: ids });
+       console.log("the task is "+JSON.stringify(task))
+       setShowAssignModal(false);
+    }}
+  />
+)}
+
     </div>
   );
 };
