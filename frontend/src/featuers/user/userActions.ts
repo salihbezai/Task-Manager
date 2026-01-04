@@ -7,6 +7,7 @@ import api from "../../api/axios";
     async (_, { rejectWithValue }) => {
         try {
             const { data } = await api.get('/users');
+            console.log("the users are "+JSON.stringify(data))
             return data;
         } catch (error) {
           return rejectWithValue(error.response?.data?.message || error.message);

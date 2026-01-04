@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { MdAdd, MdAttachment, MdGroupAdd } from "react-icons/md";
@@ -21,6 +21,7 @@ const CreateTask = () => {
     attachments: []
   });
 
+
   const [showAssignModal, setShowAssignModal] = useState(false);
 
 
@@ -41,7 +42,9 @@ const CreateTask = () => {
      dispatch(fetchUsers());
   }, [dispatch]);
 
- 
+  // function that filter the users as objects and not strings
+  const selectedUsers = useMemo(() => users?.filter(user => task.assignedTo.includes(user._id)),
+   [users, task.assignedTo]);
 
   return (
     <div className="p-6">
@@ -120,6 +123,22 @@ const CreateTask = () => {
         {/* Assigned To */}
         <div>
           <label className="block font-medium mb-1">Assign To</label>
+          <div>
+            {
+              task?.assignedTo.length > 0 ?(
+                <div className="flex items-center gap-2">
+                  {selectedUsers?.map((user: any) => (
+                    <img
+                      key={user._id}
+                      src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+                      alt={user.name}
+                      title={user.name}
+                      className="w-8 h-8 rounded-full"
+                       onClick={()=> setShowAssignModal(true)}
+                    />
+                  ))}
+                </div>
+              ):(
           <button 
           type="button"
           className="flex items-center py-2 px-2 rounded gap-2
@@ -129,7 +148,12 @@ const CreateTask = () => {
             <MdGroupAdd size={20}/>
             Add Members
           </button>
+            )
+            }
+          </div>
+ 
         </div>
+
         </div>
 
      

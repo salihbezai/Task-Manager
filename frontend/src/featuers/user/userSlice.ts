@@ -4,10 +4,9 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 
 interface userType {
-    id: string;
+    _id: string;
     name: string;
     email: string;
-    password: string;
     profileImageUrl?: string;
     role: "member" | "admin";
     createdAt?: Date;

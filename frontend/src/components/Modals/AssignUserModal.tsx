@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 
-interface User {
-  _id: string;
-  name: string;
-  avatar?: string;
-}
+
 
 interface Props {
-  users: User[];
+  users: [] ;
   selectedUsers: string[];
   onClose: () => void;
   onDone: (ids: string[]) => void;
@@ -43,10 +39,13 @@ const AssignUsersModal: React.FC<Props> = ({
                 ${selected.includes(user._id) ? "bg-blue-100 border-blue-400" : ""}`}
             >
               <img
-                src={user.avatar || "/avatar.png"}
+                src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
                 className="w-8 h-8 rounded-full"
               />
+              <div>
               <span>{user.name}</span>
+               <p className="text-xs text-gray-700">{user.email}</p>
+              </div>
             </div>
           ))}
         </div>
