@@ -24,6 +24,8 @@ export interface TaskRequestBody {
 export const createTask = async (req: Request, res: Response): Promise<void> => {
     const { title, description, priority, status, dueDate,
          assignedTo, attachments, todos,progress } = req.body as TaskRequestBody;
+
+         console.log(req.body)
        
         if(!title){
              res.status(400).json({message: "Title is required"})

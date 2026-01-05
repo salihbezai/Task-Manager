@@ -29,5 +29,18 @@ const fetchAllTasks = createAsyncThunk(
     }
 )
 
+// create task
+const createTask = createAsyncThunk(
+    'task/createTask',
+    async (task: any, { rejectWithValue }) => {
+        try {
+            const { data } = await api.post('/tasks/create', task);
+            return data;
+        } catch (error) {
+          return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+)
 
-export {getDashboardData,fetchAllTasks}
+
+export {getDashboardData,fetchAllTasks, createTask}
