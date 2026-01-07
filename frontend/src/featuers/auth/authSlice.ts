@@ -1,6 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { fetchCurrentUser, loginUser, registerUser } from "./authActions";
-import { login } from '../../../../backend/src/controllers/authController';
 
 
 
