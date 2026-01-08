@@ -6,9 +6,10 @@ import AssignUsersModal from "../../components/Modals/AssignUserModal";
 import { fetchUsers } from "../../featuers/user/userActions";
 import { createTask } from "../../featuers/task/taskActions";
 import { toast } from "react-toastify";
-// import { createTask } from "../../featuers/task/taskActions";
+
 
 const CreateTask = () => {
+  
   const initialTask = {
     title: "",
     description: "",
@@ -32,6 +33,9 @@ const CreateTask = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [inputTodo, setInputTodo] = useState("");
   const [inputAttachment, setInputAttachment] = useState("");
+
+
+
 
   /* ================= BASIC HANDLERS ================= */
 
@@ -67,6 +71,9 @@ const CreateTask = () => {
     [users, task.assignedTo]
   );
 
+    const MAX_VISIBLE_USERS = 3;
+    const visibleUsers = selectedUsers?.slice(0, MAX_VISIBLE_USERS);
+    const extraCount = selectedUsers?.length - MAX_VISIBLE_USERS;
   /* ================= TODOS ================= */
 
   const handleAddTodo = () => {
@@ -162,17 +169,34 @@ const CreateTask = () => {
 
           <div>
             {task.assignedTo.length > 0 ? (
-              <div className="flex gap-2">
-                {selectedUsers.map(user => (
-                  <img
-                    key={user._id}
-                    src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
-                    title={user.name}
-                    className="w-8 h-8 rounded-full cursor-pointer"
-                    onClick={() => setShowAssignModal(true)}
-                  />
-                ))}
-              </div>
+      <div className="flex items-center">
+              {visibleUsers.map((user, index) => (
+            
+                 <img
+                  key={user._id}
+                  src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+                  title={user.name}
+                  onClick={() => setShowAssignModal(true)}
+                  className={`
+                    w-12 h-12 rounded-full border-2 border-white cursor-pointer
+                    ${index !== 0 ? "-ml-3" : ""}
+                  `}
+                />
+              ))}
+                {
+                  selectedUsers.length > MAX_VISIBLE_USERS && (
+                                     <div
+                  onClick={() => setShowAssignModal(true)}
+                  className={`flex items-center justify-center
+                    w-9 h-9 bg-gray-300 rounded-full border-2
+                     border-white cursor-pointer -ml-3"
+                  `}
+                >
+                  {`+${extraCount}`}
+                </div>
+                  )
+                }
+            </div>
             ) : (
               <button
                 type="button"
