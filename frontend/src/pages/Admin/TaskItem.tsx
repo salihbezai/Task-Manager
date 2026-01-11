@@ -16,7 +16,7 @@ const progressPercentage =
 
 
   return (
-    <div className='bg-white px-3 py-3 rounded-sm'>
+    <div className='w-full bg-white px-3 py-3 rounded-sm'>
        <div className="py-2 flex gap-4">
             <span className={`px-2 py-1 rounded text-xs bg-green-300
                  text-green-900 font-bold`}>
@@ -34,7 +34,7 @@ const progressPercentage =
        {/* task done progress */}
    <div className="mt-2">
             <p className="text-sm text-gray-500 mb-1">Task done: {completedTodos}/{totalTodos}</p>
-        <div className="w-56 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
             <div className="h-full bg-cyan-400 transition-all duration-300"
             style={{ width: `${progressPercentage}%` }}/>
         </div>

@@ -11,10 +11,10 @@ const ManageTasks = () => {
           Pednding
         </div>
       </div>
-    <div className='grid md:grid-cols-3'>
+    <div className='w-full grid md:grid-cols-3 gap-2'>
 
       {
-        Array.from({ length: 1 }).map((_, index) => (<TaskItem/>))
+        Array.from({ length: 3 }).map((_, index) => (<TaskItem/>))
       }
     
     </div>
