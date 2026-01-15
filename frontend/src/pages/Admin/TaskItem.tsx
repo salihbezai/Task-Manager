@@ -2,7 +2,7 @@ import React from 'react'
 import { MdAttachment } from 'react-icons/md';
 
 
-const TaskItem = () => {
+const TaskItem = ({ task }) => {
  const task_todos =  [
   { text: "Design UI", done: true },
   { text: "Build API", done: false }
@@ -13,6 +13,7 @@ const progressPercentage =
   totalTodos === 0 ? 0 : Math.round((completedTodos / totalTodos) * 100);
 
 
+  console.log("the task is "+task)
 
 
   return (
@@ -28,9 +29,9 @@ const progressPercentage =
             </span>
        </div>
        {/* title task */}
-       <h3 className="text-lg font-semibold">Task title</h3>
+       <h3 className="text-lg font-semibold">{task.title}</h3>
        {/* description */}
-       <p className="text-sm text-gray-500">Task description</p>
+       <p className="text-sm text-gray-500">{task.description}</p>
        {/* task done progress */}
    <div className="mt-2">
             <p className="text-sm text-gray-500 mb-1">Task done: {completedTodos}/{totalTodos}</p>
@@ -46,14 +47,14 @@ const progressPercentage =
 
      <div className="mt-2">
        <p className="text-sm text-gray-500 ">Start Date</p>
-       <p className="text-sm text-gray-500">1/1/2023</p>
+       <p className="text-sm text-gray-500">{task.startDate}</p>
     </div>
 
  
 
     <div className="mt-2">
        <p className="text-sm text-gray-500 ">Due Date</p>
-       <p className="text-sm text-gray-500">1/1/2023</p>
+       <p className="text-sm text-gray-500">{task.dueDate}</p>
     </div>
 
     </div>

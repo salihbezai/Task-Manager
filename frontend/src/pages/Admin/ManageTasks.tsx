@@ -1,7 +1,11 @@
-import React from 'react'
 import TaskItem from './TaskItem'
+import { useSelector } from 'react-redux';
+import type { AppDispatch } from "../../store/store";
 
 const ManageTasks = () => {
+  
+  const  { tasks, loading, error } = useSelector((state: any) => state.task);
+  console.log("ttasks is "+tasks)
   return (
     <div>
       <div className='flex justify-between items-center mb-4'>
@@ -14,7 +18,7 @@ const ManageTasks = () => {
     <div className='w-full grid md:grid-cols-3 gap-2'>
 
       {
-        Array.from({ length: 3 }).map((_, index) => (<TaskItem/>))
+        tasks && tasks.map((task) => (<TaskItem task={task}/>))
       }
     
     </div>
