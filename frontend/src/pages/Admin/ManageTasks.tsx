@@ -1,11 +1,31 @@
 import TaskItem from './TaskItem'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from "../../store/store";
+import { useEffect } from 'react';
+import { fetchAllTasks } from '../../featuers/task/taskActions';
+import { fetchUsers } from '../../featuers/user/userActions';
 
 const ManageTasks = () => {
   
+  const dispatch = useDispatch<AppDispatch>();
   const  { tasks, loading, error } = useSelector((state: any) => state.task);
-  console.log("ttasks is "+tasks)
+  const  { users } = useSelector((state: any) => state.user);
+
+  // fetch tasks 
+  useEffect(() => {
+    if(tasks.length === 0){
+     dispatch(fetchAllTasks());
+    }
+  }, [dispatch,tasks.length]); 
+
+  // fetch users
+  useEffect(() => {
+    if(users.length === 0){
+     dispatch(fetchUsers());
+    }
+  }, [dispatch,users.length]);
+
+
   return (
     <div>
       <div className='flex justify-between items-center mb-4'>
@@ -15,10 +35,10 @@ const ManageTasks = () => {
           Pednding
         </div>
       </div>
-    <div className='w-full grid md:grid-cols-3 gap-2'>
+    <div className='w-full grid md:grid-cols-3 gap-2 bg-gray-100'>
 
       {
-        tasks && tasks.map((task) => (<TaskItem task={task}/>))
+        tasks && tasks.map((task) => (<TaskItem task={task} users={users}/>))
       }
     
     </div>

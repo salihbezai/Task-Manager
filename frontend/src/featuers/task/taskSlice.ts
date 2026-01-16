@@ -80,7 +80,6 @@ const initialState: TaskState = {
                   builder.addCase(fetchAllTasks.fulfilled, (state, action) => {
                     state.loading = false;
                     state.tasks = action.payload;
-                    console.log("the tasks are those things there i'm gonna show write now "+JSON.stringify(state.tasks))
                     state.error = null;
                   })
                   builder.addCase(fetchAllTasks.rejected, (state, action) => {

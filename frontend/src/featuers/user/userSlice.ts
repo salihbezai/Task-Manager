@@ -17,7 +17,7 @@ interface userType {
 
 
     const initialState = {
-        users: null,
+        users: [],
         loading: false,
         error: null,
     }

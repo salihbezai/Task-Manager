@@ -21,7 +21,6 @@ const fetchAllTasks = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const { data } = await api.get('/tasks');
-            console.log("tasks "+JSON.stringify(data))
             return data;
         } catch (error) {
           return rejectWithValue(error.response?.data?.message || error.message);
