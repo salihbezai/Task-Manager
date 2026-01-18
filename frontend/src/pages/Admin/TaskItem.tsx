@@ -18,7 +18,7 @@ const extraCount = assignedUsers.length - visibleUsers.length;
 
 
   return (
-    <div className="w-full bg-white px-3 py-3 rounded-sm">
+    <div className="w-full bg-white px-3 py-3 rounded-sm shadow-lg">
       <div className="py-2 flex gap-4">
         <span
           className={`px-2 py-1 rounded text-xs
@@ -50,7 +50,7 @@ const extraCount = assignedUsers.length - visibleUsers.length;
       {/* task done progress */}
       <div className="mt-2">
         <p className="text-sm text-gray-500 mb-1">
-          Task done: {completedTodos}/{totalTodos}
+          Task done: <span className="font-bold">{completedTodos}/{totalTodos}</span>
         </p>
         <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
@@ -65,14 +65,14 @@ const extraCount = assignedUsers.length - visibleUsers.length;
       <div className="flex flex-row justify-between">
         <div className="mt-2">
           <p className="text-sm text-gray-500 ">Start Date</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 font-bold">
             {format(task.createdAt, "dd MMM yyyy")}
           </p>
         </div>
 
         <div className="mt-2">
           <p className="text-sm text-gray-500 ">Due Date</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 font-bold">
             {format(task.dueDate, "dd MMM yyyy")}
           </p>
         </div>
@@ -82,8 +82,7 @@ const extraCount = assignedUsers.length - visibleUsers.length;
 
       <div className="flex flex-row justify-between mt-2">
         <div>
-          <p className="text-sm text-gray-500 mb-2">Assigned To</p>
-               { <div className="flex items-center">
+    { <div className="flex items-center">
   {visibleUsers.map((user, index) => (
     <img
       key={user._id}
@@ -113,10 +112,16 @@ const extraCount = assignedUsers.length - visibleUsers.length;
         </div>
    
         {/* attachments */}
-        <div className="flex flex-row gap-1 items-center">
+       {
+          task.attachments.length > 0 &&(
+         <div className="flex flex-row gap-1 items-center bg-[#EBF3FE] px-2 py-1 rounded">
           <MdAttachment size={25} />
           <span>{task.attachments.length}</span>
         </div>
+          )
+       } 
+
+      
       </div>
     </div>
   );

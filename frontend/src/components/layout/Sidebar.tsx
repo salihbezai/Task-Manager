@@ -78,7 +78,7 @@ const Sidebar = ({
                   to={item.path}
                   className={`
                     flex items-center gap-3 px-4 py-2 rounded-md
-                    transition
+                    transition 
                     ${isActive
                       ? "bg-blue-600 text-white"
                       : "text-gray-800 hover:bg-gray-300 hover:text-gray-900"}
