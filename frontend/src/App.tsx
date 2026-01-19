@@ -22,6 +22,7 @@ import UserLayout from './components/layout/UserLayout'
 
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import UpdateTask from './pages/Admin/UpdateTask'
 
 
 const App=()=> {
@@ -46,6 +47,7 @@ const App=()=> {
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="tasks" element={<ManageTasks />} />
       <Route path="create-task" element={<CreateTask />} />
+      <Route path="update-task/:id" element={<UpdateTask />} />
       <Route path="users" element={<ManageUsers />} />
   </Route>
 

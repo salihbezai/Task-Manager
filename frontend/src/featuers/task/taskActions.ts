@@ -21,6 +21,7 @@ const fetchAllTasks = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const { data } = await api.get('/tasks');
+            console.log("the tasks "+JSON.stringify(data))
             return data;
         } catch (error) {
           return rejectWithValue(error.response?.data?.message || error.message);
@@ -41,5 +42,30 @@ const createTask = createAsyncThunk(
     }
 )
 
+const fetchTaskById = createAsyncThunk(
+    'task/fetchTaskById',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const { data } = await api.get(`/tasks/${id}`);
+            return data;
+        } catch (error) {
+          return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+)
 
-export {getDashboardData,fetchAllTasks, createTask}
+// update task
+const updateTask = createAsyncThunk(    
+    'task/updateTask',
+    async (task: any, { rejectWithValue }) => {
+        try {
+            const { data } = await api.put(`/tasks/update/${task._id}`, task);
+            return data;
+        } catch (error) {
+          return rejectWithValue(error.response?.data?.message || error.message);
+        }   
+    }
+)
+
+
+export {getDashboardData,fetchAllTasks, createTask,fetchTaskById, updateTask}

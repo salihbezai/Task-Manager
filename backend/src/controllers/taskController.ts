@@ -67,7 +67,9 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
 // update task
 export const updateTask = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
+    console.log("the id is "+id)
     const updateData = req.body as Partial<TaskRequestBody>;
+    console.log("trying to update the task "+JSON.stringify(updateData))
     
     try {
         const task = await Task.findById(id);

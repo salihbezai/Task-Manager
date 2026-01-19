@@ -1,8 +1,10 @@
 import React from "react";
 import { MdAttachment } from "react-icons/md";
 import { format } from "date-fns";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const TaskItem = ({ task, users }) => {
+  const navigate = useNavigate();
     
   const totalTodos = task && task.todos.length;
   const completedTodos = task && task.todos.filter((t) => t.done).length;
@@ -18,7 +20,8 @@ const extraCount = assignedUsers.length - visibleUsers.length;
 
 
   return (
-    <div className="w-full bg-white px-3 py-3 rounded-sm shadow-lg">
+    <div className="w-full bg-white px-3 py-3 rounded-sm shadow-lg" 
+    onClick={()=>navigate(`/admin/update-task/${task._id}`)}>
       <div className="py-2 flex gap-4">
         <span
           className={`px-2 py-1 rounded text-xs
