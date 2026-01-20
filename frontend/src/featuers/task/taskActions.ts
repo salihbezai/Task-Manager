@@ -21,7 +21,6 @@ const fetchAllTasks = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const { data } = await api.get('/tasks');
-            console.log("the tasks "+JSON.stringify(data))
             return data;
         } catch (error) {
           return rejectWithValue(error.response?.data?.message || error.message);
@@ -67,5 +66,18 @@ const updateTask = createAsyncThunk(
     }
 )
 
+// delete task 
+const deleteTask = createAsyncThunk(
+    'task/deleteTask',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const { data } = await api.delete(`/tasks/delete/${id}`);
+            return data;
+        } catch (error) {
+          return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+)
 
-export {getDashboardData,fetchAllTasks, createTask,fetchTaskById, updateTask}
+
+export {getDashboardData,fetchAllTasks, createTask,fetchTaskById, updateTask,deleteTask}

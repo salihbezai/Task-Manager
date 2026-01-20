@@ -67,7 +67,6 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
 // update task
 export const updateTask = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    console.log("the id is "+id)
     const updateData = req.body as Partial<TaskRequestBody>;
     console.log("trying to update the task "+JSON.stringify(updateData))
     
@@ -84,7 +83,11 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
         }
         Object.assign(task, updateData);
         const updatedTask = await task.save()
-        res.status(200).json(updatedTask);
+        // ✅ populate assigned users before sending back
+        const populatedTask = await Task.findById(id)
+         .populate("assignedTo", "name email profileImageUrl")
+        
+        res.status(200).json(populatedTask);
     } catch (error) {
                 logger.error({
                 message: "Error updating task",
@@ -99,6 +102,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
 // delete task 
 export const deleteTask = async (req: Request, res: Response): Promise<void> => {
     const { id }  = req.params;
+    console.log("the id is "+id)
     try {
         const task = await Task.findById(id);
         if (!task) {
@@ -106,12 +110,12 @@ export const deleteTask = async (req: Request, res: Response): Promise<void> => 
             return;
         }
         // ownership check
-        if (task.createdBy?.toString() !== req.user?.id) {
+        if (task.createdBy?.toString() !== req.user?.id && req.user?.role !== 'admin') {
             res.status(403).json({ message: "You are not authorized to delete this task" });
             return;
         }
        await Task.findByIdAndDelete(id);
-        res.status(200).json({ message: "Task deleted successfully" });
+        res.status(200).json({ id });
     }catch (error) {
                 logger.error({
                 message: "Error deleting task",
