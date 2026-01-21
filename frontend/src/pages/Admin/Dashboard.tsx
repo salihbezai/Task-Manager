@@ -69,7 +69,7 @@ const Dashboard = () => {
   const Task_Priority_Colors = ["#01B170", "#FD8F00", "#FD1C4D"];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-2 py-4 space-y-6">
       {/* Greeting */}
       <div>
         <h1 className="text-2xl font-bold">

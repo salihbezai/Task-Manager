@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   createTask,
   deleteTask,
+  downloadTasksCSV,
   fetchAllTasks,
   fetchTaskById,
   getDashboardData,
@@ -168,6 +169,20 @@ const taskSlice = createSlice({
       state.error = null;
     });
     builder.addCase(deleteTask.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+    // download task report as CSV
+    builder.addCase(downloadTasksCSV.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(downloadTasksCSV.fulfilled, (state) => {
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(downloadTasksCSV.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
     });

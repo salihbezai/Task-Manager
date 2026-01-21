@@ -1,5 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import api from "../../api/axios";
 
 
@@ -48,5 +47,18 @@ const registerUser = createAsyncThunk(
     }
 )
 
+// logout user
+const logoutUser = createAsyncThunk(
+    'auth/logoutUser',
+    async (_, { rejectWithValue }) => {
+        try {
+            const { data } = await api.get('/auth/logout');
+            console.log("the data after logout "+JSON.stringify(data))
+            return data;
+        } catch (error) {
+          return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+)
 
-export { fetchCurrentUser, loginUser, registerUser };
+export { fetchCurrentUser, loginUser, registerUser, logoutUser };

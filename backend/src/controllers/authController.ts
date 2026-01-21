@@ -4,6 +4,7 @@ import { User } from "../models/User"
 import jwt from "jsonwebtoken"
 import dotenv from 'dotenv';
 import { logger } from "../utility";
+import { log } from "console";
 
 dotenv.config();
 
@@ -225,4 +226,11 @@ export const updateUserProfile = async (req: Request, res: Response) => {
         });
         res.status(500).json({ message: "Server error updating user profile." });
     }
+}
+
+// logout user
+export const logout = async (req: Request, res: Response) => {
+    console.log("logout launched...")
+    res.clearCookie("token");
+    res.status(200).json({ loggedOut: true, message: "User logged out successfully." });
 }

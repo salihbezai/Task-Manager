@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { getUserProfile, login, register, updateUserProfile } from "../controllers/authController"
+import { getUserProfile, login, logout, register, updateUserProfile } from "../controllers/authController"
 import { protect } from "../middlewares/authMiddleware"
 import upload from "../middlewares/uploadMiddleware"
 import { logger } from "../utility"
@@ -9,6 +9,7 @@ router.post("/register",register)
 router.post("/login",login)
 router.get("/me",protect,getUserProfile)
 router.put("/profile",protect,updateUserProfile)
+router.get("/logout",protect,logout)
 
 router.post("/upload-image",upload.single('image'), (req, res) => {
     try {

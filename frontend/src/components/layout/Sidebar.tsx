@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   MdDashboard,
   MdTask,
@@ -6,7 +6,10 @@ import {
   MdAddTask,
   MdLogout,
 } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../../store/store";
+import { logoutUser } from "../../featuers/auth/authActions";
+import { toast } from "react-toastify";
 
 const Sidebar = ({
   isOpen,
@@ -15,6 +18,8 @@ const Sidebar = ({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: any) => state.auth);
 
@@ -32,6 +37,16 @@ const Sidebar = ({
   ];
 
   const menu = user?.role === "admin" ? adminMenu : userMenu;
+
+  const handlLogout = async() => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      toast.success("Logged out successfully.");
+      navigate('/login');
+    } catch (error) {
+      toast.error("Error logging out. Please try again.");
+    }
+  }
 
   return (
     <>
@@ -91,14 +106,15 @@ const Sidebar = ({
             })}
 
             {/* Logout */}
-            <Link
-              to="/logout"
-              className="flex items-center gap-3 px-4 py-2 rounded-md
-              text-gray-800 hover:bg-red-600 hover:text-white transition"
+            <button
+              type="button"
+              className="w-full text-left flex items-center gap-3 px-4 py-2 rounded-md
+              text-gray-800 hover:bg-red-600 hover:text-white transition cursor-pointer"
+              onClick={handlLogout}
             >
               <MdLogout size={20} />
               Logout
-            </Link>
+            </button>
           </nav>
         </div>
       </aside>

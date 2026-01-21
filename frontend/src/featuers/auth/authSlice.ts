@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { fetchCurrentUser, loginUser, registerUser } from "./authActions";
+import { fetchCurrentUser, loginUser, logoutUser, registerUser } from "./authActions";
 
 
 
@@ -24,7 +24,7 @@ interface AuthState {
 
     const initialState: AuthState = {
         user: null,
-        loading: false,
+        loading: true,
         error: null,
         loginError: null,
         loginLoading: false,
@@ -93,7 +93,18 @@ interface AuthState {
                         state.registerLoading = false;
                         state.registerError = action.payload;
                       })
-
+                      // logout user
+                      builder.addCase(logoutUser.pending, (state) => {
+                        state.loading = true;
+                        state.error = null;
+                      })
+                      builder.addCase(logoutUser.fulfilled, (state) => {
+                        state.user = null;
+                        state.error = null;
+                      })
+                      builder.addCase(logoutUser.rejected, (state, action: PayloadAction<string>) => {
+                        state.error = action.payload;
+                      })
 
         }
     })

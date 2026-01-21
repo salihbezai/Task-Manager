@@ -2,8 +2,9 @@ import TaskItem from "./TaskItem";
 import { useSelector, useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/store";
 import { useEffect, useState } from "react";
-import { fetchAllTasks } from "../../featuers/task/taskActions";
+import { downloadTasksCSV, fetchAllTasks } from "../../featuers/task/taskActions";
 import { fetchUsers } from "../../featuers/user/userActions";
+import { toast } from "react-toastify";
 
 type FilterButtonProps = {
   label: string;
@@ -80,6 +81,15 @@ const ManageTasks = () => {
           (task) => task.status.toLowerCase() === activeFilter.toLowerCase(),
         );
 
+  const handlDownloadReport = async() => {
+   try {
+    await dispatch(downloadTasksCSV()).unwrap()
+   } catch (error) {
+    console.log("error "+error)
+    toast.error("Failed to download report");
+   }
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -116,7 +126,8 @@ const ManageTasks = () => {
           />
           {/* download report button */}
           <div className="ml-4">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">
+            <button onClick={handlDownloadReport}
+            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">
               Download Report
             </button>
           </div>

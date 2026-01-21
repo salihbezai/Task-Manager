@@ -117,7 +117,7 @@ const CreateTask = () => {
   /* =============================================== */
 
   return (
-    <div className="p-6">
+    <div className="px-2 py-4">
       <h2 className="text-xl font-bold mb-4">Create New Task</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">

@@ -155,7 +155,7 @@ const UpdateTask = () => {
   /* ================= UI ================= */
 
   return (
-    <div className="p-6">
+    <div className="px-2 py-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">Update Task</h2>
         {/* delete button  */}

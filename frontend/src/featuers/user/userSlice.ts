@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { downloadUsersCSV, fetchUsers } from "./userActions";
 
 
 
@@ -33,16 +34,29 @@ interface userType {
         },
         extraReducers: (builder) => {
            // fetch users
-           builder.addCase('user/fetchUsers/pending', (state) => {
+           builder.addCase(fetchUsers.pending, (state) => {
             state.loading = true;
             state.error = null;
            })
-              builder.addCase('user/fetchUsers/fulfilled', (state, action: PayloadAction<userType>) => {
+              builder.addCase(fetchUsers.fulfilled, (state, action: PayloadAction<userType>) => {
                 state.loading = false;
                 state.users = action.payload;
                 state.error = null;
               })
-              builder.addCase('user/fetchUsers/rejected', (state, action: PayloadAction<string>) => {
+              builder.addCase(fetchUsers.rejected, (state, action: PayloadAction<string>) => {
+                state.loading = false;
+                state.error = action.payload;
+              })
+              // download users CSV
+              builder.addCase(downloadUsersCSV.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+               })
+              builder.addCase(downloadUsersCSV.fulfilled, (state) => {
+                state.loading = false;
+                state.error = null;
+              })
+              builder.addCase(downloadUsersCSV.rejected, (state, action: PayloadAction<string>) => {
                 state.loading = false;
                 state.error = action.payload;
               })

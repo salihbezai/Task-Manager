@@ -9,7 +9,7 @@ interface PrivatRouteProps {
 }
 const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
   const { user, loading } = useSelector((state: RootState)=> state.auth);
-  
+  console.log("the loading "+loading)
   if(loading){
     return (
     <div className='w-full h-screen flex justify-center items-center'>
@@ -19,9 +19,9 @@ const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
    
   }
 
-  // if(!user || !allowedRoles.includes(user.role)){
-  //   return <Navigate to='/login' />
-  // }
+  if(!user || !allowedRoles.includes(user.role)){
+    return <Navigate to='/login' />
+  }
 
  return <Outlet />
 }
