@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import {
   createTask,
   deleteTask,
@@ -8,40 +8,9 @@ import {
   getDashboardData,
   updateTask,
 } from "./taskActions";
+import type { TaskState } from "./taskTypes";
 
-interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  priority?: "low" | "medium" | "high";
-  status: "pending" | "in-progress" | "completed";
-  dueDate?: Date;
-  assignedTo?: string[];
-  createdBy?: string;
-  attachments?: string[];
-  todos: { text: string; completed: boolean }[];
-  progress: number;
-  createdAt?: Date;
-}
 
-interface TaskState {
-  totalTasks: number;
-  completedTasks: number;
-  pendingTasks: number;
-  inProgressTasks: number;
-  tasks: Task[];
-  selectedTask: Task | null;
-  updatedTask: Task | null;
-  error: string | null;
-  loading: boolean;
-  createTaskLoading: boolean;
-  updateTaskLoading: boolean;
-  updateTaskError: string | null;
-  selectedLoadingTask: boolean;
-  createTaskError: string | null;
-  selectedErrorTask: string | null;
-  createdTask: Task | null;
-}
 
 const initialState: TaskState = {
   totalTasks: 0,
@@ -92,7 +61,7 @@ const taskSlice = createSlice({
     });
     builder.addCase(getDashboardData.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload ?? null;
     });
     // get all tasks
     builder.addCase(fetchAllTasks.pending, (state) => {
@@ -106,7 +75,7 @@ const taskSlice = createSlice({
     });
     builder.addCase(fetchAllTasks.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload ?? null;
     });
     // create task
     builder.addCase(createTask.pending, (state) => {
@@ -116,11 +85,13 @@ const taskSlice = createSlice({
     builder.addCase(createTask.fulfilled, (state, action) => {
       state.createTaskLoading = false;
       state.createdTask = action.payload;
+      //  add new task to the tasks array
+      state.tasks.push(action.payload);
       state.createTaskError = null;
     });
     builder.addCase(createTask.rejected, (state, action) => {
       state.createTaskLoading = false;
-      state.createTaskError = "Something went wrong, please try again.";
+      state.createTaskError = action.payload ?? null;
     });
     // get task by id
     builder.addCase(fetchTaskById.pending, (state) => {
@@ -134,7 +105,7 @@ const taskSlice = createSlice({
     });
     builder.addCase(fetchTaskById.rejected, (state, action) => {
       state.selectedLoadingTask = false;
-      state.selectedErrorTask = action.payload;
+      state.selectedErrorTask = action.payload ?? null;
     });
     // update task
     builder.addCase(updateTask.pending, (state) => {
@@ -155,7 +126,7 @@ const taskSlice = createSlice({
     });
     builder.addCase(updateTask.rejected, (state, action) => {
       state.updateTaskLoading = false;
-      state.updateTaskError = action.payload;
+      state.updateTaskError = action.payload ?? null;
     })
     // delete task
     builder.addCase(deleteTask.pending, (state) => {
@@ -164,13 +135,13 @@ const taskSlice = createSlice({
     });
     builder.addCase(deleteTask.fulfilled, (state, action) => {
       state.loading = false;
-      const deletedTaskId = action.payload.id;
+      const deletedTaskId = action.payload;
       state.tasks = state.tasks.filter((task) => task._id !== deletedTaskId);
       state.error = null;
     });
     builder.addCase(deleteTask.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload ?? null;
     });
 
     // download task report as CSV
@@ -184,7 +155,7 @@ const taskSlice = createSlice({
     });
     builder.addCase(downloadTasksCSV.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload ?? null;
     });
   },
 });

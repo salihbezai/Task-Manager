@@ -6,11 +6,12 @@ import AssignUsersModal from "../../components/Modals/AssignUserModal";
 import { fetchUsers } from "../../featuers/user/userActions";
 import { createTask } from "../../featuers/task/taskActions";
 import { toast } from "react-toastify";
+import type { CreateTaskPayload } from "../../featuers/task/taskTypes";
 
 
 const CreateTask = () => {
   
-  const initialTask = {
+  const initialTask : CreateTaskPayload = {
     title: "",
     description: "",
     priority: "medium",
@@ -26,7 +27,7 @@ const CreateTask = () => {
     (state: RootState) => state.task
   )
 
-  const [task, setTask] = useState(initialTask);
+  const [task, setTask] = useState<CreateTaskPayload>(initialTask);
 
   const [ titleError, setTitleError ] = useState('');
 

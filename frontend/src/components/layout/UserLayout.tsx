@@ -4,12 +4,15 @@ import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
-export default function UserLayout() {
+const UserLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div>
-      <Navbar toggleSidebar={() => setIsOpen((prev)=> !prev)} isOpen={isOpen}  />
+      <Navbar
+        toggleSidebar={() => setIsOpen((prev) => !prev)}
+        isOpen={isOpen}
+      />
 
       <div className="flex pt-16">
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
@@ -18,9 +21,11 @@ export default function UserLayout() {
           className={`w-full transition-all duration-300 bg-red-400
             md:ml-64`}
         >
-          <Outlet />  
+          <Outlet />
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default UserLayout;

@@ -19,7 +19,8 @@ const TaskItem = ({ task }) => {
 
   return (
     <div
-      className="w-full bg-white px-3 py-3 rounded-sm shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300"
+      className="w-full bg-white px-3 py-3 rounded-sm shadow-lg 
+      cursor-pointer hover:shadow-xl transition-shadow duration-300"
       onClick={() => navigate(`/admin/update-task/${task._id}`)}
     >
       <div className="py-2 flex gap-4">

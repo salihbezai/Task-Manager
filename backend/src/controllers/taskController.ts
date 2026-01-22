@@ -32,7 +32,6 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
              return;
         }
 
-        console.log("this object id "+req.user?.id)
         try {
               const task = new Task(
             {

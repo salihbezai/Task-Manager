@@ -98,7 +98,7 @@ const Dashboard = () => {
         <div className="bg-white p-4 shadow rounded-lg">
           <h3 className="font-semibold mb-3">Tasks Distribution</h3>
           <div className="h-64">
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie
                   data={distributionData}
@@ -121,7 +121,7 @@ const Dashboard = () => {
         <div className="bg-white p-4 shadow rounded-lg">
           <h3 className="font-semibold mb-3">Priority Levels</h3>
           <div className="h-64">
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={priorityData}>
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />

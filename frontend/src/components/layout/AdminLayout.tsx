@@ -4,12 +4,15 @@ import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
-export default function AdminLayout() {
+const AdminLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div>
-      <Navbar toggleSidebar={() => setIsOpen((prev)=> !prev)} isOpen={isOpen}  />
+      <Navbar
+        toggleSidebar={() => setIsOpen((prev) => !prev)}
+        isOpen={isOpen}
+      />
 
       <div className="flex pt-16">
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
@@ -18,9 +21,10 @@ export default function AdminLayout() {
           className={`w-full h-full min-h-screen px-2 py-4 transition-all duration-300 bg-gray-100
             md:ml-64`}
         >
-          <Outlet />  
+          <Outlet />
         </main>
       </div>
     </div>
   );
-}
+};
+export default AdminLayout;

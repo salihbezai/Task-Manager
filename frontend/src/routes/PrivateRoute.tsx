@@ -9,8 +9,7 @@ interface PrivatRouteProps {
 }
 const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
   const { user, loading } = useSelector((state: RootState)=> state.auth);
-  console.log("the loading "+loading)
-  if(loading){
+  if(loading && !user){
     return (
     <div className='w-full h-screen flex justify-center items-center'>
       <BeatLoader size={15} color='#2563EB' />

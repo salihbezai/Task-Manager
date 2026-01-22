@@ -1,64 +1,92 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
+import { getErrorMessage } from "../../utils/errorHelper";
 
+interface userType {
+  id: string;
+  name: string;
+  email: string;
+  profileImageUrl?: string;
+  role: string;
+}
 
+// fetch logged in user
+const fetchCurrentUser = createAsyncThunk<
+  userType,
+  void,
+  { rejectValue: string }
+>("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await api.get("/auth/me");
+    return data;
+  } catch (error: unknown) {
+    rejectWithValue(getErrorMessage(error));
+  }
+});
 
-const fetchCurrentUser = createAsyncThunk(
-    'auth/fetchCurrentUser',
-    async (_, { rejectWithValue }) => {
-        try {
-            const { data } = await api.get('/auth/me');
-            return data;
-        } catch (error) {
-          return rejectWithValue(error.response?.data?.message || error.message);
-        }
+// login user thunk
+const loginUser = createAsyncThunk<
+  userType,
+  { email: string; password: string },
+  { rejectValue: string }
+>(
+  "auth/loginUser",
+  async (
+    credentials: { email: string; password: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await api.post("/auth/login", credentials);
+      return data;
+    } catch (error: unknown) {
+      rejectWithValue(getErrorMessage(error));
     }
-)
+  },
+);
 
-const loginUser = createAsyncThunk(
-    'auth/loginUser',
-    async (credentials: { email: string; password: string }, { rejectWithValue }) => {
-        try {
-            const { data } = await api.post('/auth/login', credentials);
-            return data;
-        } catch (error) {
-          return rejectWithValue(error.response?.data?.message || error.message);
-        }
+// signup user thunk
+const registerUser = createAsyncThunk<
+  userType,
+  {
+    name: string;
+    email: string;
+    password: string;
+    profileImageUrl?: string;
+    inviteToken: string;
+  },
+  { rejectValue: string }
+>(
+  "auth/signupUser",
+  async (
+    credentials: {
+      name: string;
+      email: string;
+      password: string;
+      profileImageUrl?: string;
+      inviteToken: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await api.post("/auth/register", credentials);
+      return data;
+    } catch (error: unknown) {
+      rejectWithValue(getErrorMessage(error));
     }
-)
-
-
-// signup
-const registerUser = createAsyncThunk(
-    'auth/signupUser',
-    async (credentials: { 
-        name: string;
-        email: string;
-        password: string;
-        profileImageUrl?: string;
-        inviteToken: string
-        }, { rejectWithValue }) => {
-        try {
-            const { data } = await api.post('/auth/register', credentials);
-            return data;
-        } catch (error) {
-          return rejectWithValue(error.response?.data?.message || error.message);
-        }
-    }
-)
+  },
+);
 
 // logout user
-const logoutUser = createAsyncThunk(
-    'auth/logoutUser',
-    async (_, { rejectWithValue }) => {
-        try {
-            const { data } = await api.get('/auth/logout');
-            console.log("the data after logout "+JSON.stringify(data))
-            return data;
-        } catch (error) {
-          return rejectWithValue(error.response?.data?.message || error.message);
-        }
+const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await api.get("/auth/logout");
+      return;
+    } catch (error: unknown) {
+      rejectWithValue(getErrorMessage(error));
     }
-)
+  },
+);
 
 export { fetchCurrentUser, loginUser, registerUser, logoutUser };

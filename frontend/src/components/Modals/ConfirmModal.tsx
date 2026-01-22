@@ -9,16 +9,14 @@ interface Props {
   onConfirm: () => void;
 }
 
-
-
-export default function ConfirmModal({
+const ConfirmModal = ({
   open,
   title,
   message,
   confirmText,
   onClose,
   onConfirm,
-}: Props) {
+}: Props) => {
   return (
     <AnimatePresence>
       {open && (
@@ -27,7 +25,7 @@ export default function ConfirmModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose} 
+          onClick={onClose}
         >
           {/* Modal box */}
           <motion.div
@@ -61,3 +59,4 @@ export default function ConfirmModal({
     </AnimatePresence>
   );
 }
+export default ConfirmModal;
