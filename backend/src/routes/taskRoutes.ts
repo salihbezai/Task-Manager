@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createTask, deleteTask, 
     getDashboardData, getTaskById, getTasks,
-     getUserDashboardData, updateTask, 
+     getUserDashboardData, getUserTasks, updateTask, 
      updateTaskCheckList, updateTaskStatus } from "../controllers/taskController";
 import { adminOnly, protect } from '../middlewares/authMiddleware';
 
@@ -18,8 +18,11 @@ router.get("/user-dashboard-data",protect,getUserDashboardData)
 // create task
 router.post("/create",protect,adminOnly,createTask)
 
-// get tasks
+// get tasks for admin
 router.get("/",protect,adminOnly,getTasks)
+
+// get tasks for user
+router.get("/user-tasks",protect,getUserTasks)
 
 // get task by id 
 router.get("/:id",protect,getTaskById)

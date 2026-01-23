@@ -1,14 +1,10 @@
 import React, { useState } from "react";
+import type { User } from "../../featuers/user/userTypes";
 
-interface IUser {
-  _id: string;
-  name: string;
-  email: string;
-  profileImageUrl: string;
-}
+
 
 interface Props {
-  users: IUser[];
+  users: User[];
   selectedUsers: string[];
   onClose: () => void;
   onDone: (ids: string[]) => void;

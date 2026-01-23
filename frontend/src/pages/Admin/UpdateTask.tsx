@@ -5,19 +5,25 @@ import type { AppDispatch, RootState } from "../../store/store";
 import { MdAdd, MdAttachment, MdDelete, MdGroupAdd } from "react-icons/md";
 import AssignUsersModal from "../../components/Modals/AssignUserModal";
 import { fetchUsers } from "../../featuers/user/userActions";
-import { deleteTask, fetchTaskById, updateTask } from "../../featuers/task/taskActions";
+import {
+  deleteTask,
+  fetchTaskById,
+  updateTask,
+} from "../../featuers/task/taskActions";
 import { toast } from "react-toastify";
 import ConfirmModal from "../../components/Modals/ConfirmModal";
+import type { UpdateTaskPayload } from "../../featuers/task/taskTypes";
 
 const UpdateTask = () => {
-  const initialTask = {
+  const initialTask: UpdateTaskPayload = {
+    _id: "",
     title: "",
     description: "",
     priority: "medium",
     status: "pending",
     dueDate: "",
     assignedTo: [] as string[],
-    todos: [] as { text: string }[],
+    todos: [] as { text: string, completed: boolean }[],
     attachments: [] as string[],
   };
 
@@ -31,16 +37,18 @@ const UpdateTask = () => {
   );
 
   const [open, setOpen] = useState(false);
-  const [task, setTask] = useState(initialTask);
+  const [task, setTask] = useState<UpdateTaskPayload>(initialTask);
   const [titleError, setTitleError] = useState("");
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [inputTodo, setInputTodo] = useState("");
   const [inputAttachment, setInputAttachment] = useState("");
 
-  const formatDateForInput = (dateString: string) => {
+  const formatDateForInput = (dateString?: string) => {
     if (!dateString) return "";
     return new Date(dateString).toISOString().split("T")[0];
   };
+
+
 
   /* ================= FETCH DATA ================= */
 
@@ -54,11 +62,22 @@ const UpdateTask = () => {
   /* ================= PREFILL FORM ================= */
 
   useEffect(() => {
-    if (selectedTask) {
-      setTask(selectedTask);
-    }
-  }, [selectedTask]);
+    if (!selectedTask) return;
 
+    setTask({
+      _id: selectedTask._id,
+      title: selectedTask.title,
+      description: selectedTask.description,
+      priority: selectedTask.priority,
+      status: selectedTask.status ,
+      dueDate: selectedTask.dueDate
+        ? new Date(selectedTask.dueDate).toISOString().split("T")[0]
+        : "",
+      assignedTo: selectedTask.assignedTo?.map((_id) => _id) ?? [],
+      todos: selectedTask.todos?.map((t) => ({ text: t.text, completed: t.completed })) ?? [],
+      attachments: selectedTask.attachments ?? [],
+    });
+  }, [selectedTask]);
 
   /* ================= HANDLERS ================= */
 
@@ -69,6 +88,7 @@ const UpdateTask = () => {
   ) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +102,7 @@ const UpdateTask = () => {
       await dispatch(updateTask(task)).unwrap();
       toast.success("Task updated successfully");
       navigate("/admin/tasks");
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error("Failed to update task ❌");
     }
   };
@@ -90,9 +110,11 @@ const UpdateTask = () => {
   /* ================= USERS ================= */
 
   const selectedUsers = useMemo(
-    () => users?.filter((user) => task.assignedTo.includes(user._id)) ?? [],
+    () => users?.filter((user) => task.assignedTo?.includes(user._id)) ?? [],
     [users, task.assignedTo],
   );
+  console.log("the task assgined to "+task.assignedTo)
+  console.log("users "+JSON.stringify(users))
 
   const MAX_VISIBLE_USERS = 3;
   const visibleUsers = selectedUsers.slice(0, MAX_VISIBLE_USERS);
@@ -105,7 +127,7 @@ const UpdateTask = () => {
 
     setTask((prev) => ({
       ...prev,
-      todos: [...prev.todos, { text: inputTodo.trim() }],
+      todos: [...prev.todos || [], { text: inputTodo.trim(), completed: false }],
     }));
 
     setInputTodo("");
@@ -114,7 +136,7 @@ const UpdateTask = () => {
   const removeTodo = (index: number) => {
     setTask((prev) => ({
       ...prev,
-      todos: prev.todos.filter((_, i) => i !== index),
+      todos: prev.todos?.filter((_, i) => i !== index),
     }));
   };
 
@@ -125,7 +147,7 @@ const UpdateTask = () => {
 
     setTask((prev) => ({
       ...prev,
-      attachments: [...prev.attachments, inputAttachment.trim()],
+      attachments: [...prev.attachments || [], inputAttachment.trim()],
     }));
 
     setInputAttachment("");
@@ -134,26 +156,24 @@ const UpdateTask = () => {
   const removeAttachment = (index: number) => {
     setTask((prev) => ({
       ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index),
+      attachments: prev.attachments?.filter((_, i) => i !== index),
     }));
   };
 
   /* ================= DELETE TASK ================= */
-  const deleteTaskHandler = async() => {
+  const deleteTaskHandler = async () => {
     try {
-        await dispatch(deleteTask(task._id)).unwrap();
-        toast.success("Task deleted successfully");
-        navigate("/admin/tasks");
-    }catch(error){
-        toast.error("Failed to delete task ❌");
-    }
-    finally {
-        setOpen(false);
+      await dispatch(deleteTask(task._id)).unwrap();
+      toast.success("Task deleted successfully");
+      navigate("/admin/tasks");
+    } catch (error : unknown) {
+      toast.error("Failed to delete task");
+    } finally {
+      setOpen(false);
     }
   };
 
   /* ================= UI ================= */
-
   return (
     <div className="px-2 py-4">
       <div className="flex items-center justify-between mb-4">
@@ -162,14 +182,14 @@ const UpdateTask = () => {
         <button
           className="flex items-center justify-center bg-red-500
              text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
-          onClick={() => setOpen(true) }
+          onClick={() => setOpen(true)}
         >
           <MdDelete className="inline-block mr-2" size={20} />
           Delete
         </button>
       </div>
 
-            {/* Modal */}
+      {/* Modal */}
       <ConfirmModal
         open={open}
         title="Delete Task"
@@ -256,7 +276,7 @@ const UpdateTask = () => {
 
           <div>
             <label className="block font-medium mb-1">Assign to</label>
-            {task.assignedTo.length > 0 ? (
+            {(task.assignedTo?.length ?? 0)> 0 ? (
               <div className="flex items-center">
                 {visibleUsers?.map((user, index) => (
                   <img
@@ -315,7 +335,7 @@ const UpdateTask = () => {
 
           <div className="w-2/3">
             <ul className="mt-3 space-y-2">
-              {task.todos.map((todo, i) => (
+              {task.todos?.map((todo, i) => (
                 <li
                   key={i}
                   className="flex justify-between bg-gray-50 p-2 rounded border"
@@ -362,7 +382,7 @@ const UpdateTask = () => {
           </div>
           <div className="w-2/3">
             <ul className="mt-3 space-y-2">
-              {task.attachments.map((att, i) => (
+              {task.attachments?.map((att, i) => (
                 <li
                   key={i}
                   className="flex justify-between bg-gray-50 p-2 rounded border"
@@ -401,7 +421,7 @@ const UpdateTask = () => {
       {showAssignModal && (
         <AssignUsersModal
           users={users}
-          selectedUsers={task.assignedTo}
+          selectedUsers={task.assignedTo || []}
           onClose={() => setShowAssignModal(false)}
           onDone={(ids) => {
             setTask((prev) => ({ ...prev, assignedTo: ids }));

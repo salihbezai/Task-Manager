@@ -17,8 +17,8 @@ const UserLayout = () => {
       <div className="flex pt-16">
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-        <main
-          className={`w-full transition-all duration-300 bg-red-400
+      <main
+          className={`w-full h-full min-h-screen px-2 py-4 transition-all duration-300 bg-gray-100
             md:ml-64`}
         >
           <Outlet />

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { getErrorMessage } from "../../utils/errorHelper";
-import type { CreateTaskPayload, Task } from "./taskTypes";
+import type { CreateTaskPayload, Task, UpdateTaskPayload } from "./taskTypes";
 
 
 export interface DashboardStats {
@@ -22,12 +22,38 @@ const getDashboardData = createAsyncThunk<DashboardStats, void, { rejectValue: s
   },
 );
 
+const getUserDashboardData = createAsyncThunk<DashboardStats, void, { rejectValue: string }>(
+  "task/getUserDashboardData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get("/tasks/user-dashboard-data");
+
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
 // get all tasks
 const fetchAllTasks = createAsyncThunk<Task[], void, { rejectValue: string }>(
   "task/fetchAllTasks",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/tasks");
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+// get tasks for user
+const getUserTasks = createAsyncThunk<Task[], void, { rejectValue: string }>(
+  "task/getUserTasks",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get("/tasks/user-tasks");
       return data;
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
@@ -54,6 +80,7 @@ const fetchTaskById = createAsyncThunk<Task, string, { rejectValue: string }>(
   async (id: string, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/tasks/${id}`);
+      console.log("the task id "+JSON.stringify(data))
       return data;
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
@@ -62,9 +89,9 @@ const fetchTaskById = createAsyncThunk<Task, string, { rejectValue: string }>(
 );
 
 // update task
-const updateTask = createAsyncThunk<Task, Task, { rejectValue: string }>(
+const updateTask = createAsyncThunk<Task, UpdateTaskPayload, { rejectValue: string }>(
   "task/updateTask",
-  async (task: Task, { rejectWithValue }) => {
+  async (task: UpdateTaskPayload, { rejectWithValue }) => {
     try {
       const { data } = await api.put(`/tasks/update/${task._id}`, task);
       return data;
@@ -121,10 +148,12 @@ const downloadTasksCSV = createAsyncThunk<boolean, void, { rejectValue: string }
 
 export {
   getDashboardData,
+  getUserDashboardData,
   fetchAllTasks,
   createTask,
   fetchTaskById,
   updateTask,
   deleteTask,
   downloadTasksCSV,
+  getUserTasks
 };

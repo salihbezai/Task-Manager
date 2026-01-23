@@ -6,6 +6,8 @@ import {
   fetchAllTasks,
   fetchTaskById,
   getDashboardData,
+  getUserDashboardData,
+  getUserTasks,
   updateTask,
 } from "./taskActions";
 import type { TaskState } from "./taskTypes";
@@ -63,6 +65,23 @@ const taskSlice = createSlice({
       state.loading = false;
       state.error = action.payload ?? null;
     });
+    // get user dashboard data
+    builder.addCase(getUserDashboardData.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getUserDashboardData.fulfilled, (state, action) => {
+      state.loading = false;
+      state.totalTasks = action.payload.totalTasks;
+      state.completedTasks = action.payload.completedTasks;
+      state.pendingTasks = action.payload.pendingTasks;
+      state.inProgressTasks = action.payload.inProgressTasks;
+      state.error = null;
+    });
+    builder.addCase(getUserDashboardData.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload ?? null;
+    });
     // get all tasks
     builder.addCase(fetchAllTasks.pending, (state) => {
       state.loading = true;
@@ -74,6 +93,20 @@ const taskSlice = createSlice({
       state.error = null;
     });
     builder.addCase(fetchAllTasks.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload ?? null;
+    });
+    // get user tasks
+    builder.addCase(getUserTasks.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getUserTasks.fulfilled, (state, action) => {
+      state.loading = false;
+      state.tasks = action.payload;
+      state.error = null;
+    });
+    builder.addCase(getUserTasks.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload ?? null;
     });

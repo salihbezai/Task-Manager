@@ -7,24 +7,24 @@ import { toast } from "react-toastify";
 
 const ManageUsers = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const  { users, loading, error } = useSelector((state: RootState) => state.user);
+  const { users } = useSelector(
+    (state: RootState) => state.user
+  );
 
-
-
-// fetch users on component mount
+  // fetch users on component mount
   useEffect(() => {
-    if(users.length === 0){
-     dispatch(fetchUsers());
+    if (users.length === 0) {
+      dispatch(fetchUsers());
     }
   }, [dispatch, users.length]);
 
-  const handlDownloadReport = async() => {
+  const handlDownloadReport = async () => {
     try {
-      await dispatch(downloadUsersCSV()).unwrap()
-    } catch (error) {
+      await dispatch(downloadUsersCSV()).unwrap();
+    } catch (error: unknown) {
       toast.error("Failed to download report");
     }
-  }
+  };
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -33,8 +33,10 @@ const ManageUsers = () => {
         <div className="flex">
           {/* download report button */}
           <div className="ml-4">
-            <button onClick={handlDownloadReport}
-            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">
+            <button
+              onClick={handlDownloadReport}
+              className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
+            >
               Download Report
             </button>
           </div>
@@ -46,9 +48,8 @@ const ManageUsers = () => {
           <MemberCard key={user._id} user={user} />
         ))}
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default ManageUsers
+export default ManageUsers;

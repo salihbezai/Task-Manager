@@ -1,19 +1,23 @@
 import { MdAttachment } from "react-icons/md";
 import { format } from "date-fns";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import type { Task } from "../../featuers/task/taskTypes";
+import type { RootState } from "../../store/store";
+import { useSelector } from "react-redux";
 
-const TaskItem = ({ task }) => {
+const TaskItem = ({ task }: { task: Task }) => {
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const totalTodos = task && task.todos.length;
-  const completedTodos = task && task.todos.filter((t) => t.done).length;
+  const completedTodos = task && task.todos.filter((t) => t.completed).length;
   const progressPercentage =
     totalTodos === 0 ? 0 : Math.round((completedTodos / totalTodos) * 100);
 
   // assigned users display logic
   const MAX_VISIBLE_USERS = 3;
 
-  const assignedUsers = task?.assignedTo || [];
+  const assignedUsers= task?.assignedTo || [];
   const visibleUsers = assignedUsers.slice(0, MAX_VISIBLE_USERS);
   const extraCount = assignedUsers.length - visibleUsers.length;
 
@@ -21,7 +25,7 @@ const TaskItem = ({ task }) => {
     <div
       className="w-full bg-white px-3 py-3 rounded-sm shadow-lg 
       cursor-pointer hover:shadow-xl transition-shadow duration-300"
-      onClick={() => navigate(`/admin/update-task/${task._id}`)}
+      onClick={() => user?.role==="admin"? navigate(`/admin/update-task/${task._id}`):navigate(`/user/task-details/${task._id}`)}
     >
       <div className="py-2 flex gap-4">
         <span
@@ -54,7 +58,7 @@ const TaskItem = ({ task }) => {
       <h3 className="text-lg font-semibold">{task.title}</h3>
       {/* description  show a bit of it not all*/}
       <p className="text-sm text-gray-500">
-        {task.description.slice(0, 70)}...
+        {task.description?.slice(0, 70)}...
       </p>
       {/* task done progress */}
       <div className="mt-2">
@@ -78,14 +82,14 @@ const TaskItem = ({ task }) => {
         <div className="mt-2">
           <p className="text-sm text-gray-500 ">Start Date</p>
           <p className="text-sm text-gray-500 font-bold">
-            {format(task.createdAt, "dd MMM yyyy")}
+            {format(task.createdAt!, "dd MMM yyyy")}
           </p>
         </div>
 
         <div className="mt-2">
           <p className="text-sm text-gray-500 ">Due Date</p>
           <p className="text-sm text-gray-500 font-bold">
-            {format(task.dueDate, "dd MMM yyyy")}
+            {format(task.dueDate!, "dd MMM yyyy")}
           </p>
         </div>
       </div>
@@ -125,10 +129,10 @@ const TaskItem = ({ task }) => {
         </div>
 
         {/* attachments */}
-        {task.attachments.length > 0 && (
+        {((task.attachments?.length) ?? 0 )> 0 && (
           <div className="flex flex-row gap-1 items-center bg-[#EBF3FE] px-2 py-1 rounded">
             <MdAttachment size={25} />
-            <span>{task.attachments.length}</span>
+            <span>{task.attachments?.length}</span>
           </div>
         )}
       </div>

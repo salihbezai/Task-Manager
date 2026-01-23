@@ -5,7 +5,7 @@ import { adminOnly, protect } from '../middlewares/authMiddleware';
 const router = Router();
 
 // get users
-router.get('/', protect, adminOnly,getUsers);
+router.get('/', protect,getUsers);
 
 // GET USER BY ID
 router.get('/:id', protect,getUserById);

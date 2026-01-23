@@ -1,3 +1,4 @@
+
 export interface Task {
   _id: string;
   title: string;
@@ -10,7 +11,7 @@ export interface Task {
   attachments?: string[];
   todos: { text: string; completed: boolean }[];
   progress: number;
-  createdAt?: Date;
+  createdAt?: Date ;
   updatedAt?: Date;
 }
 
@@ -42,5 +43,16 @@ export interface CreateTaskPayload {
   dueDate?: string;          // sending as ISO string from <input type="date">
   assignedTo?: string[];
   todos?: { text: string }[];
+  attachments?: string[];
+}
+export interface UpdateTaskPayload {
+  _id: string;
+  title: string;
+  description?: string;
+  priority?: "low" | "medium" | "high";
+  status?: "pending" | "in-progress" | "completed";
+  dueDate?: string;          // sending as ISO string from <input type="date">
+  assignedTo?: string[];
+  todos?: { text: string, completed: boolean }[];
   attachments?: string[];
 }

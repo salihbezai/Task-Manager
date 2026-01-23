@@ -1,10 +1,15 @@
 import TaskItem from "./TaskItem";
 import { useSelector, useDispatch } from "react-redux";
-import type { AppDispatch } from "../../store/store";
+import type { AppDispatch, RootState } from "../../store/store";
 import { useEffect, useState } from "react";
-import { downloadTasksCSV, fetchAllTasks } from "../../featuers/task/taskActions";
+import {
+  downloadTasksCSV,
+  fetchAllTasks,
+  getUserTasks
+} from "../../featuers/task/taskActions";
 import { fetchUsers } from "../../featuers/user/userActions";
 import { toast } from "react-toastify";
+import type { Task } from "../../featuers/task/taskTypes";
 
 type FilterButtonProps = {
   label: string;
@@ -44,17 +49,30 @@ const FilterButton = ({
 
 const ManageTasks = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { tasks, loading, error } = useSelector((state: any) => state.task);
-  const { users } = useSelector((state: any) => state.user);
+  const { tasks } = useSelector(
+    (state: RootState) => state.task,
+  );
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { users } = useSelector(
+    (state: RootState) => state.user,
+  );
+
 
   const [activeFilter, setActiveFilter] = useState("all");
 
   // fetch tasks
   useEffect(() => {
-    if (tasks.length === 0) {
-      dispatch(fetchAllTasks());
+    if(user?.role==="admin"){
+      if (tasks.length === 0) {
+        dispatch(fetchAllTasks());
+      }
+    }else{
+      if(tasks.length===0){
+        dispatch(getUserTasks())
+      }
     }
-  }, [dispatch, tasks.length]);
+  
+  }, [dispatch, tasks.length, user?.role]);
 
   // fetch users
   useEffect(() => {
@@ -65,13 +83,13 @@ const ManageTasks = () => {
 
   const allCount = tasks.length;
   const completedCount = tasks.filter(
-    (task: any) => task.status === "completed",
+    (task: Task) => task.status === "completed",
   ).length;
   const inProgressCount = tasks.filter(
-    (task: any) => task.status === "in-progress",
+    (task: Task) => task.status === "in-progress",
   ).length;
   const pendingCount = tasks.filter(
-    (task: any) => task.status === "pending",
+    (task: Task) => task.status === "pending",
   ).length;
 
   const filteredTasks =
@@ -81,14 +99,14 @@ const ManageTasks = () => {
           (task) => task.status.toLowerCase() === activeFilter.toLowerCase(),
         );
 
-  const handlDownloadReport = async() => {
-   try {
-    await dispatch(downloadTasksCSV()).unwrap()
-   } catch (error) {
-    console.log("error "+error)
-    toast.error("Failed to download report");
-   }
-  }
+  const handlDownloadReport = async () => {
+    try {
+      await dispatch(downloadTasksCSV()).unwrap();
+    } catch (error) {
+      console.log("error " + error);
+      toast.error("Failed to download report");
+    }
+  };
 
   return (
     <div>
@@ -125,12 +143,19 @@ const ManageTasks = () => {
             onClick={setActiveFilter}
           />
           {/* download report button */}
+          {
+            user?.role==="admin" && (
           <div className="ml-4">
-            <button onClick={handlDownloadReport}
-            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">
+            <button
+              onClick={handlDownloadReport}
+              className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
+            >
               Download Report
             </button>
           </div>
+            )
+          }
+
         </div>
       </div>
       {filteredTasks.length === 0 && (
@@ -143,9 +168,7 @@ const ManageTasks = () => {
       )}
       <div className="w-full h-full grid md:grid-cols-3 gap-3">
         {filteredTasks &&
-          filteredTasks.map((task) => (
-            <TaskItem key={task._id} task={task} />
-          ))}
+          filteredTasks.map((task) => <TaskItem key={task._id} task={task} />)}
       </div>
     </div>
   );

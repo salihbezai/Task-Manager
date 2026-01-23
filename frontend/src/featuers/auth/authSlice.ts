@@ -5,14 +5,9 @@ import {
   logoutUser,
   registerUser,
 } from "./authActions";
+import type { userType } from "./userTypes";
 
-interface userType {
-  id: string;
-  name: string;
-  email: string;
-  profileImageUrl?: string;
-  role: string;
-}
+
 
 interface AuthState {
   user: null | userType;

@@ -1,36 +1,55 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  PieChart, Pie, Cell,
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  Legend
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from "recharts";
-import { fetchAllTasks, getDashboardData } from "../../featuers/task/taskActions";
-import type { AppDispatch } from "../../store/store";
+import {
+  fetchAllTasks,
+  getDashboardData,
+  getUserDashboardData,
+  getUserTasks,
+} from "../../featuers/task/taskActions";
+import type { AppDispatch, RootState } from "../../store/store";
+import type { Task } from "../../featuers/task/taskTypes";
 
 const Dashboard = () => {
-  const dispatch = useDispatch<AppDispatch>(); 
-  const { user } = useSelector((state: any) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
   const { totalTasks, completedTasks, pendingTasks, inProgressTasks, tasks } =
-    useSelector((state: any) => state.task);
+    useSelector((state: RootState) => state.task);
+
   // ⬅️ Pagination State
   const [page, setPage] = useState(1);
   const pageSize = 5;
   const totalPages = Math.ceil(tasks?.length / pageSize) || 1;
-  
-
 
   // fetch dashboard data
   useEffect(() => {
-    dispatch(getDashboardData());
-  }, [dispatch]);
+    if(user?.role==="admin"){
+      dispatch(getDashboardData());
+    }else{
+      dispatch(getUserDashboardData());
+    }
+  }, [dispatch, user?.role]);
 
   // fetch all tasks
   useEffect(() => {
-    dispatch(fetchAllTasks());
-  }, [dispatch]);
-
-
+    if(user?.role==="admin"){
+          dispatch(fetchAllTasks());
+     
+    }else{
+        dispatch(getUserTasks());
+    }
+  }, [dispatch,user?.role, tasks.length]);
 
   const paginatedTasks = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -55,9 +74,10 @@ const Dashboard = () => {
 
   // 🎯 Priority Chart (Calculated from tasks using useMemo)
   const priorityData = useMemo(() => {
-    const low = tasks?.filter((t: any) => t.priority === "low").length || 0;
-    const medium = tasks?.filter((t: any) => t.priority === "medium").length || 0;
-    const high = tasks?.filter((t: any) => t.priority === "high").length || 0;
+    const low = tasks?.filter((t: Task) => t.priority === "low").length || 0;
+    const medium =
+      tasks?.filter((t: Task) => t.priority === "medium").length || 0;
+    const high = tasks?.filter((t: Task) => t.priority === "high").length || 0;
 
     return [
       { name: "Low", value: low },
@@ -75,15 +95,16 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold">
           Hello Mr, <span className="text-blue-600">{user?.name}</span> 👋
         </h1>
-        <p className="text-gray-500 text-sm">
-          {new Date().toDateString()}
-        </p>
+        <p className="text-gray-500 text-sm">{new Date().toDateString()}</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="p-4 rounded-xl shadow-md bg-white flex flex-col gap-2">
+          <div
+            key={i}
+            className="p-4 rounded-xl shadow-md bg-white flex flex-col gap-2"
+          >
             <span className="text-gray-500 text-sm">{s.label}</span>
             <span className="text-3xl font-bold">{s.value}</span>
             <div className={`h-2 rounded-full ${s.color}`} />
@@ -93,7 +114,6 @@ const Dashboard = () => {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
-
         {/* Task Distribution */}
         <div className="bg-white p-4 shadow rounded-lg">
           <h3 className="font-semibold mb-3">Tasks Distribution</h3>
@@ -111,7 +131,11 @@ const Dashboard = () => {
                   ))}
                 </Pie>
 
-                <Legend verticalAlign="bottom" align="center" iconType="circle" />
+                <Legend
+                  verticalAlign="bottom"
+                  align="center"
+                  iconType="circle"
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -131,7 +155,11 @@ const Dashboard = () => {
                   {priorityData.map((_, index) => (
                     <Cell
                       key={index}
-                      fill={Task_Priority_Colors[index % Task_Priority_Colors.length]}
+                      fill={
+                        Task_Priority_Colors[
+                          index % Task_Priority_Colors.length
+                        ]
+                      }
                     />
                   ))}
                 </Bar>
@@ -159,8 +187,11 @@ const Dashboard = () => {
             </thead>
 
             <tbody>
-              {paginatedTasks.map((t: any, i: number) => (
-                <tr key={i} className="border-b last:border-none hover:bg-gray-50">
+              {paginatedTasks.map((t: Task, i: number) => (
+                <tr
+                  key={i}
+                  className="border-b last:border-none hover:bg-gray-50"
+                >
                   <td className="py-2">{t.title}</td>
                   {/* <td className="flex py-2 flex-row items-center justify-center space-between gap-1">
                     {
@@ -174,29 +205,37 @@ const Dashboard = () => {
                   </td> */}
                   {/* <td className="py-2">{t.createdBy?.name}</td> */}
                   <td className="py-2">
-                    <span className={`px-2 py-1 rounded text-xs
-                      ${t.status === "completed"
-                        ? "bg-green-300 text-green-900 font-bold"
-                        : t.status === "pending"
-                        ? "bg-purple-300 text-purple-900 font-bold"
-                        : "bg-cyan-300 text-cyan-900 font-bold"
-                      }`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs
+                      ${
+                        t.status === "completed"
+                          ? "bg-green-300 text-green-900 font-bold"
+                          : t.status === "pending"
+                            ? "bg-purple-300 text-purple-900 font-bold"
+                            : "bg-cyan-300 text-cyan-900 font-bold"
+                      }`}
+                    >
                       {t.status}
                     </span>
                   </td>
 
                   <td className="py-2">
-                    <span className={`px-2 py-1 rounded text-xs
-                      ${t.priority === "high"
-                        ? "bg-red-300 text-red-900 font-bold"
-                        : t.priority === "medium"
-                        ? "bg-orange-300 text-orange-900 font-bold"
-                        : "bg-green-300 text-green-900 font-bold"
-                      }`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs
+                      ${
+                        t.priority === "high"
+                          ? "bg-red-300 text-red-900 font-bold"
+                          : t.priority === "medium"
+                            ? "bg-orange-300 text-orange-900 font-bold"
+                            : "bg-green-300 text-green-900 font-bold"
+                      }`}
+                    >
                       {t.priority}
                     </span>
                   </td>
-                  <td className="py-2">{t.createdAt ? new Date(t.createdAt).toDateString() : "—"}</td>
+                  <td className="py-2">
+                    {t.createdAt ? new Date(t.createdAt).toDateString() : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -207,7 +246,7 @@ const Dashboard = () => {
         <div className="flex justify-between items-center mt-4">
           <button
             disabled={page === 1}
-            onClick={() => setPage(prev => prev - 1)}
+            onClick={() => setPage((prev) => prev - 1)}
             className="px-4 py-1 border rounded cursor-pointer  disabled:opacity-50"
           >
             Prev
@@ -219,7 +258,7 @@ const Dashboard = () => {
 
           <button
             disabled={page === totalPages}
-            onClick={() => setPage(prev => prev + 1)}
+            onClick={() => setPage((prev) => prev + 1)}
             className="px-4 py-1 border rounded cursor-pointer disabled:opacity-50"
           >
             Next

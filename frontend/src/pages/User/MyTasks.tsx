@@ -1,10 +1,8 @@
-import React from 'react'
+import ManageTasks from "../Admin/ManageTasks"
 
 const MyTasks = () => {
   return (
-    <div>
-      
-    </div>
+<ManageTasks/>
   )
 }
 

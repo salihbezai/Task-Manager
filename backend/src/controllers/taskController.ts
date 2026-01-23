@@ -146,11 +146,31 @@ export const getTasks = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
+// get user tasks
+export const getUserTasks = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.id;
+        const tasks = await Task.find({ assignedTo: userId })
+        .populate("createdBy", "name email profileImageUrl")
+        .populate("assignedTo", "name email profileImageUrl");
+        res.status(200).json(tasks);
+    } catch (error) {
+        logger.error({
+            message: "Error fetching user tasks",
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            route: req.originalUrl
+        })
+        res.status(500).json({ message: "Failed to fetch user tasks" });
+    }
+}
+
 // get task by id 
 export const getTaskById = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     try {
         const task = await Task.findById(id);
+        console.log("the task i'm getting is "+JSON.stringify(task))
         if (!task) {
             res.status(404).json({ message: "Task not found" });
             return;
@@ -255,10 +275,16 @@ export const getDashboardData = async (req: Request, res: Response): Promise<voi
 export const getUserDashboardData = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.user?.id;
-        const totalTasks = await Task.countDocuments({ createdBy: userId });
-        const completedTasks = await Task.countDocuments({ createdBy: userId, status: "completed" });
-        const pendingTasks = await Task.countDocuments({ createdBy: userId, status: "pending" });
-        const inProgressTasks = await Task.countDocuments({ createdBy: userId, status: "in-progress" });
+        const totalTasks = await Task.countDocuments({ assignedTo: userId });
+        const completedTasks = await Task.countDocuments({ assignedTo: userId, status: "completed" });
+        const pendingTasks = await Task.countDocuments({ assignedTo: userId, status: "pending" });
+        const inProgressTasks = await Task.countDocuments({ assignedTo: userId, status: "in-progress" });
+        console.log("here "+  JSON.stringify( {
+            totalTasks,
+            completedTasks,
+            pendingTasks,
+            inProgressTasks
+        }))
         res.status(200).json({
             totalTasks,
             completedTasks,

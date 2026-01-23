@@ -1,14 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { getErrorMessage } from "../../utils/errorHelper";
+import type { userType } from "./userTypes";
 
-interface userType {
-  id: string;
-  name: string;
-  email: string;
-  profileImageUrl?: string;
-  role: string;
-}
+
 
 // fetch logged in user
 const fetchCurrentUser = createAsyncThunk<

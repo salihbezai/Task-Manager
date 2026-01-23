@@ -8,10 +8,8 @@ import { createTask } from "../../featuers/task/taskActions";
 import { toast } from "react-toastify";
 import type { CreateTaskPayload } from "../../featuers/task/taskTypes";
 
-
 const CreateTask = () => {
-  
-  const initialTask : CreateTaskPayload = {
+  const initialTask: CreateTaskPayload = {
     title: "",
     description: "",
     priority: "medium",
@@ -19,48 +17,47 @@ const CreateTask = () => {
     dueDate: "",
     assignedTo: [] as string[],
     todos: [] as { text: string }[],
-    attachments: [] as string[]
-  }
+    attachments: [] as string[],
+  };
   const dispatch = useDispatch<AppDispatch>();
   const { users } = useSelector((state: RootState) => state.user);
   const { createTaskLoading, createTaskError } = useSelector(
-    (state: RootState) => state.task
-  )
+    (state: RootState) => state.task,
+  );
 
   const [task, setTask] = useState<CreateTaskPayload>(initialTask);
 
-  const [ titleError, setTitleError ] = useState('');
+  const [titleError, setTitleError] = useState("");
 
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [inputTodo, setInputTodo] = useState("");
   const [inputAttachment, setInputAttachment] = useState("");
 
-
-
-
-  /* ================= BASIC HANDLERS ================= */
+  //  handlers
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async(e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!task.title.trim()){
-      setTitleError('Title is required');
+    if (!task.title.trim()) {
+      setTitleError("Title is required");
       return;
     }
-      setTitleError('');
+    setTitleError("");
 
-     try {
-      await dispatch(createTask(task)).unwrap()
-      toast.success('Task created successfully');
+    try {
+      await dispatch(createTask(task)).unwrap();
+      toast.success("Task created successfully");
       setTask(initialTask);
-     } catch (error: any) {
-      toast.error("Failed to create task ❌");
-     }
+    } catch (error: unknown) {
+      toast.error("Failed to create task");
+    }
   };
 
   useEffect(() => {
@@ -68,61 +65,59 @@ const CreateTask = () => {
   }, [dispatch]);
 
   const selectedUsers = useMemo(
-    () => users?.filter(user => task.assignedTo.includes(user._id)),
-    [users, task.assignedTo]
+    () => users?.filter((user) => task.assignedTo?.includes(user._id)),
+    [users, task.assignedTo],
   );
-
-    const MAX_VISIBLE_USERS = 3;
-    const visibleUsers = selectedUsers?.slice(0, MAX_VISIBLE_USERS);
-    const extraCount = selectedUsers?.length - MAX_VISIBLE_USERS;
-  /* ================= TODOS ================= */
+  const MAX_VISIBLE_USERS = 3;
+  const visibleUsers = selectedUsers?.slice(0, MAX_VISIBLE_USERS);
+  const extraCount = selectedUsers?.length - MAX_VISIBLE_USERS;
 
   const handleAddTodo = () => {
     if (!inputTodo.trim()) return;
 
-    setTask(prev => ({
+    setTask((prev) => ({
       ...prev,
-      todos: [...prev.todos, { text: inputTodo.trim() }]
+      todos: [...(prev.todos || []), { text: inputTodo.trim() }],
     }));
 
     setInputTodo("");
   };
 
   const removeTodo = (index: number) => {
-    setTask(prev => ({
+    setTask((prev) => ({
       ...prev,
-      todos: prev.todos.filter((_, i) => i !== index)
+      todos: prev.todos?.filter((_, i) => i !== index),
     }));
   };
 
-  /* ================= ATTACHMENTS ================= */
+  //  Attachements handlers
 
   const handleAddAttachment = () => {
     if (!inputAttachment.trim()) return;
 
-    setTask(prev => ({
+    setTask((prev) => ({
       ...prev,
-      attachments: [...prev.attachments, inputAttachment.trim()]
+      attachments: [...(prev.attachments || []), inputAttachment.trim()],
     }));
 
     setInputAttachment("");
   };
 
   const removeAttachment = (index: number) => {
-    setTask(prev => ({
+    setTask((prev) => ({
       ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index)
+      attachments: prev.attachments?.filter((_, i) => i !== index),
     }));
   };
-
-  /* =============================================== */
 
   return (
     <div className="px-2 py-4">
       <h2 className="text-xl font-bold mb-4">Create New Task</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
-
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 bg-white p-6 rounded shadow"
+      >
         {/* Title */}
         <div>
           <label className="block font-medium mb-1">Title</label>
@@ -130,12 +125,12 @@ const CreateTask = () => {
             name="title"
             value={task.title}
             onChange={handleChange}
-            className={
-              `w-full p-2 border rounded focus:outline-none ${titleError ? 'border-red-500' : ''}`
-            }
+            className={`w-full p-2 border rounded focus:outline-none ${titleError ? "border-red-500" : ""}`}
             placeholder="Enter task title"
           />
-          {titleError && <p className="text-red-500 text-sm mt-1">{titleError}</p>}
+          {titleError && (
+            <p className="text-red-500 text-sm mt-1">{titleError}</p>
+          )}
         </div>
 
         {/* Description */}
@@ -153,76 +148,85 @@ const CreateTask = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="">
             <label className="block font-medium mb-1">Priority</label>
-            <select name="priority" value={task.priority} onChange={handleChange} 
-            className="p-2 border rounded w-full">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-          </div>
-        
-          <div className="">
-            <label className="block font-medium mb-1">Status</label>
-            <select name="status" value={task.status} onChange={handleChange} 
-            className="p-2 border rounded w-full">
-            <option value="pending">Pending</option>
-            <option value="in-progress">In-Progress</option>
-            <option value="completed">Completed</option>
-          </select>
+            <select
+              name="priority"
+              value={task.priority}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
 
+          <div className="">
+            <label className="block font-medium mb-1">Status</label>
+            <select
+              name="status"
+              value={task.status}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="pending">Pending</option>
+              <option value="in-progress">In-Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
         </div>
 
         {/* Due Date + Assign */}
         <div className="grid grid-cols-2 gap-4">
-            <div className="w-full">
-             <label className="block font-medium mb-1">Due Date</label>
-            <input type="date" name="dueDate" value={task.dueDate} 
-            onChange={handleChange} className="p-2 border rounded w-full" />
-            </div>
+          <div className="w-full">
+            <label className="block font-medium mb-1">Due Date</label>
+            <input
+              type="date"
+              name="dueDate"
+              value={task.dueDate}
+              onChange={handleChange}
+              className="p-2 border rounded w-full"
+            />
+          </div>
           <div className="flex items-center">
-           <div>
-             <label className="block font-medium mb-1 mr-4">Assign To</label>
-            {task.assignedTo.length > 0 ? (
-      <div className="flex items-center">
-              {visibleUsers.map((user, index) => (
-            
-                 <img
-                  key={user._id}
-                  src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
-                  title={user.name}
-                  onClick={() => setShowAssignModal(true)}
-                  className={`
+            <div>
+              <label className="block font-medium mb-1 mr-4">Assign To</label>
+              {(task.assignedTo?.length ?? 0) > 0 ? (
+                <div className="flex items-center">
+                  {visibleUsers.map((user, index) => (
+                    <img
+                      key={user._id}
+                      src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+                      title={user.name}
+                      onClick={() => setShowAssignModal(true)}
+                      className={`
                     w-12 h-12 rounded-full border-2 border-white cursor-pointer
                     ${index !== 0 ? "-ml-3" : ""}
                   `}
-                />
-              ))}
-                {
-                  selectedUsers.length > MAX_VISIBLE_USERS && (
-                                     <div
-                  onClick={() => setShowAssignModal(true)}
-                  className={`flex items-center justify-center
+                    />
+                  ))}
+                  {selectedUsers.length > MAX_VISIBLE_USERS && (
+                    <div
+                      onClick={() => setShowAssignModal(true)}
+                      className={`flex items-center justify-center
                     w-9 h-9 bg-gray-300 rounded-full border-2
                      border-white cursor-pointer -ml-3"
                   `}
-                >
-                  {`+${extraCount}`}
+                    >
+                      {`+${extraCount}`}
+                    </div>
+                  )}
                 </div>
-                  )
-                }
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAssignModal(true)}
+                  className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded cursor-pointer"
+                >
+                  <MdGroupAdd size={20} />
+                  Add Members
+                </button>
+              )}
             </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowAssignModal(true)}
-                className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded cursor-pointer"
-              >
-                <MdGroupAdd size={20} />
-                Add Members
-              </button>
-            )}
-           </div>
           </div>
         </div>
 
@@ -232,34 +236,41 @@ const CreateTask = () => {
           <div className="flex gap-3">
             <input
               value={inputTodo}
-              onChange={e => setInputTodo(e.target.value)}
+              onChange={(e) => setInputTodo(e.target.value)}
               className="w-2/3 p-2 border rounded focus:outline-none"
               placeholder="Enter todo"
             />
-            <button type="button" onClick={handleAddTodo} 
-            className="flex items-center py-2 px-2 rounded gap-2 bg-gray-200 cursor-pointer">
+            <button
+              type="button"
+              onClick={handleAddTodo}
+              className="flex items-center py-2 px-2 rounded gap-2 bg-gray-200 cursor-pointer"
+            >
               <MdAdd /> Add
             </button>
           </div>
 
           <div className="w-2/3">
             <ul className="mt-3 space-y-2">
-            {task.todos.map((todo, i) => (
-              <li key={i} className="flex justify-between bg-gray-50 p-2 rounded border">
-                <div className="flex flex-row gap-1">
-                <span className="text-gray-600">{i+1}</span>
-                <span>{todo.text}</span>
-                </div>
-                <button type="button" onClick={() => removeTodo(i)} 
-                className="text-red-500 text-sm cursor-pointer">
-                  <MdDelete size={20} />
-                </button>
-              </li>
-            ))}
-          </ul>
+              {task.todos?.map((todo, i) => (
+                <li
+                  key={i}
+                  className="flex justify-between bg-gray-50 p-2 rounded border"
+                >
+                  <div className="flex flex-row gap-1">
+                    <span className="text-gray-600">{i + 1}</span>
+                    <span>{todo.text}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeTodo(i)}
+                    className="text-red-500 text-sm cursor-pointer"
+                  >
+                    <MdDelete size={20} />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-
-
         </div>
 
         {/* ATTACHMENTS */}
@@ -271,61 +282,69 @@ const CreateTask = () => {
               <MdAttachment size={20} />
               <input
                 value={inputAttachment}
-                onChange={e => setInputAttachment(e.target.value)}
+                onChange={(e) => setInputAttachment(e.target.value)}
                 placeholder="Paste file URL"
                 className="p-2 w-full focus:outline-none"
               />
             </div>
 
-            <button type="button" onClick={handleAddAttachment} 
-            className="flex items-center py-2 px-2 rounded gap-2 bg-gray-200 cursor-pointer">
+            <button
+              type="button"
+              onClick={handleAddAttachment}
+              className="flex items-center py-2 px-2 rounded gap-2 bg-gray-200 cursor-pointer"
+            >
               <MdAdd /> Add
             </button>
           </div>
-            <div className="w-2/3">
-          <ul className="mt-3 space-y-2">
-            {task.attachments.map((att, i) => (
-              <li key={i} className="flex justify-between bg-gray-50 p-2 rounded border">
-                <div className="flex flex-row items-center justify-center">
-                  <MdAttachment size={20} />
-                  <a href={att} target="_blank" className="pl-2 text-blue-600 truncate">
-                  {att}
-                </a>
-                </div>
-                <button type="button" onClick={() => removeAttachment(i)} 
-               className="text-red-500 text-sm cursor-pointer">
-                  <MdDelete size={20} />
-                </button>
-              </li>
-            ))}
-          </ul>
-            </div>
-
+          <div className="w-2/3">
+            <ul className="mt-3 space-y-2">
+              {task.attachments?.map((att, i) => (
+                <li
+                  key={i}
+                  className="flex justify-between bg-gray-50 p-2 rounded border"
+                >
+                  <div className="flex flex-row items-center justify-center">
+                    <MdAttachment size={20} />
+                    <a
+                      href={att}
+                      target="_blank"
+                      className="pl-2 text-blue-600 truncate"
+                    >
+                      {att}
+                    </a>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeAttachment(i)}
+                    className="text-red-500 text-sm cursor-pointer"
+                  >
+                    <MdDelete size={20} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Submit */}
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer">
-          
-          {
-            createTaskLoading ? "Creating Task ..." : (
-              "Create Task"
-            )
-          }
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
+        >
+          {createTaskLoading ? "Creating Task ..." : "Create Task"}
         </button>
-        {
-          createTaskError && (
-            <p className="text-red-500 mt-2">{createTaskError}</p>
-          )
-        }
+        {createTaskError && (
+          <p className="text-red-500 mt-2">{createTaskError}</p>
+        )}
       </form>
 
       {showAssignModal && (
         <AssignUsersModal
           users={users}
-          selectedUsers={task.assignedTo}
+          selectedUsers={task.assignedTo || []}
           onClose={() => setShowAssignModal(false)}
           onDone={(ids) => {
-            setTask(prev => ({ ...prev, assignedTo: ids }));
+            setTask((prev) => ({ ...prev, assignedTo: ids }));
             setShowAssignModal(false);
           }}
         />

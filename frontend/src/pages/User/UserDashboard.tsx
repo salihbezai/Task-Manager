@@ -1,11 +1,7 @@
-import React from 'react'
+import Dashboard from "../Admin/Dashboard";
 
 const UserDashboard = () => {
-  return (
-    <div>
-      user dashboard page
-    </div>
-  )
-}
+  return <Dashboard />;
+};
 
-export default UserDashboard
+export default UserDashboard;

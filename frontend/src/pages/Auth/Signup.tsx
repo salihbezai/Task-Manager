@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { registerUser } from "../../featuers/auth/authActions";
-import { clearError, clearRegisterError } from "../../featuers/auth/authSlice";
+import {  clearRegisterError } from "../../featuers/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
@@ -10,7 +10,7 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const { user, registerLoading, registerError } = useSelector(
-    (state: RootState) => state.auth
+    (state: RootState) => state.auth,
   );
 
   const [name, setName] = useState("");
@@ -26,7 +26,7 @@ const Signup = () => {
       dispatch(clearRegisterError());
       setFormError("All fields except admin token are required");
       return;
-    }        
+    }
 
     setFormError(null);
     dispatch(clearRegisterError());
@@ -37,8 +37,8 @@ const Signup = () => {
         email,
         password,
         profileImageUrl: "",
-        inviteToken: inviteToken
-      })
+        inviteToken: inviteToken,
+      }),
     );
   };
 
@@ -49,15 +49,16 @@ const Signup = () => {
     }
   }, [user, navigate]);
 
+
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-xl">
         <h1 className="text-4xl font-extrabold text-blue-700 text-center">
           Task Manager
         </h1>
-        <p className="text-gray-600 text-center mt-1">
-          Create your account 👤
-        </p>
+        <p className="text-gray-600 text-center mt-1">Create your account 👤</p>
 
         {formError && (
           <div className="bg-red-100 text-red-700 px-4 py-2 rounded-md mt-4 text-center">

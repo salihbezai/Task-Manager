@@ -43,13 +43,12 @@ const Sidebar = ({
   ];
 
   const userMenu = [
-    { label: "My Tasks", path: "/tasks", icon: <MdTask size={20} /> },
     {
-      label: "Create Task",
-      path: "/tasks/create",
-      icon: <MdAddTask size={20} />,
+      label: "Dashboard",
+      path: "/user/dashboard",
+      icon: <MdDashboard size={20} />,
     },
-    { label: "Profile", path: "/profile", icon: <MdGroup size={20} /> },
+    { label: "My Tasks", path: "/user/my-tasks", icon: <MdTask size={20} /> },
   ];
 
   const menu = user?.role === "admin" ? adminMenu : userMenu;
