@@ -1,42 +1,21 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../store/store";
-import {  MdAttachment } from "react-icons/md";
+import { MdAttachment } from "react-icons/md";
 import { fetchUsers } from "../../featuers/user/userActions";
 import {
   fetchTaskById,
-  updateTask,
+  updateTaskStatus,
 } from "../../featuers/task/taskActions";
-import { toast } from "react-toastify";
-import type { UpdateTaskPayload } from "../../featuers/task/taskTypes";
+import { BeatLoader } from "react-spinners";
 
 const ViewTaskDetails = () => {
-  const initialTask: UpdateTaskPayload = {
-    _id: "",
-    title: "",
-    description: "",
-    priority: "medium",
-    status: "pending",
-    dueDate: "",
-    assignedTo: [] as string[],
-    todos: [] as { text: string, completed: boolean }[],
-    attachments: [] as string[],
-  };
-
   const { id } = useParams(); // task id from route
-  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
   const { users } = useSelector((state: RootState) => state.user);
-  const { selectedTask } = useSelector(
-    (state: RootState) => state.task,
-  );
-
-  const [task, setTask] = useState<UpdateTaskPayload>(initialTask);
-
-
- 
+  const { selectedTask, selectedLoadingTask } = useSelector((state: RootState) => state.task);
 
   /* ================= FETCH DATA ================= */
 
@@ -49,55 +28,47 @@ const ViewTaskDetails = () => {
 
   /* ================= PREFILL FORM ================= */
 
-  useEffect(() => {
-    if (!selectedTask) return;
+  const task = selectedTask
 
-    setTask({
-      _id: selectedTask._id,
-      title: selectedTask.title,
-      description: selectedTask.description,
-      priority: selectedTask.priority,
-      status: selectedTask.status,
-      dueDate: selectedTask.dueDate
-        ? new Date(selectedTask.dueDate).toISOString().split("T")[0]
-        : "",
-      assignedTo: selectedTask.assignedTo?.map((_id) => _id) ?? [],
-      todos: selectedTask.todos?.map((t) => ({ text: t.text, completed: t.completed })) ?? [],
-      attachments: selectedTask.attachments ?? [],
-    });
-  }, [selectedTask]);
-
- 
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!task.title.trim()) {
-  //     setTitleError("Title is required");
-  //     return;
-  //   }
-
-  //   try {
-  //     await dispatch(updateTask(task)).unwrap();
-  //     toast.success("Task updated successfully");
-  //     navigate("/admin/tasks");
-  //   } catch (error: unknown) {
-  //     toast.error("Failed to update task ❌");
-  //   }
-  // };
-
-  /* ================= USERS ================= */
-
-  const selectedUsers = useMemo(
-    () => users?.filter((user) => task.assignedTo?.includes(user._id)) ?? [],
-    [users, task.assignedTo],
-  );
+  const selectedUsers = useMemo(() => {
+    if (!users || !task) return [];
+    return users.filter((user) => task.assignedTo?.includes(user._id));
+  }, [users, task]);
 
   const MAX_VISIBLE_USERS = 3;
   const visibleUsers = selectedUsers.slice(0, MAX_VISIBLE_USERS);
   const extraCount = Math.max(selectedUsers.length - MAX_VISIBLE_USERS, 0);
-  console.log("the task "+JSON.stringify(task))
 
+  type TaskStatus = "pending" | "in-progress" | "completed";
+
+  const checkTodosCompletion = (
+    todos: { text: string; completed: boolean }[],
+  ): TaskStatus => {
+    if (!todos || todos.length === 0) return "pending";
+
+    const completedCount = todos.filter((t) => t.completed).length;
+
+    if (completedCount === 0) return "pending";
+    if (completedCount === todos.length) return "completed";
+    return "in-progress";
+  };
+
+if(selectedLoadingTask) {
+  return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <BeatLoader size={15} color="#2563EB" />
+      </div>
+  );
+}
+
+
+if (!task) {
+  return (
+    <div className="p-4 text-gray-500">
+      Task not found.
+    </div>
+  );
+}
   return (
     <div className="px-2 py-4 bg-white p-4 rounded shadow">
       <div className="flex items-center justify-between mb-4">
@@ -143,34 +114,34 @@ const ViewTaskDetails = () => {
           </h3>
           {selectedUsers.length > 0 ? (
             <div className="flex items-center">
-          {
-            <div className="flex items-center">
-              {visibleUsers.map((user, index) => (
-                <img
-                  key={user._id}
-                  src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
-                  title={user.name}
-                  alt={user.name}
-                  className={`
+              {
+                <div className="flex items-center">
+                  {visibleUsers.map((user, index) => (
+                    <img
+                      key={user._id}
+                      src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+                      title={user.name}
+                      alt={user.name}
+                      className={`
         w-10 h-10 rounded-full border-2 border-white cursor-pointer
         ${index !== 0 ? "-ml-3" : ""}
       `}
-                />
-              ))}
+                    />
+                  ))}
 
-              {extraCount > 0 && (
-                <div
-                  className="
+                  {extraCount > 0 && (
+                    <div
+                      className="
         w-10 h-10 rounded-full bg-gray-300 text-gray-700
         flex items-center justify-center text-sm font-semibold
         -ml-3 border-2 border-white
       "
-                >
-                  +{extraCount}
+                    >
+                      +{extraCount}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          }
+              }
             </div>
           ) : (
             <p>No users assigned.</p>
@@ -187,10 +158,19 @@ const ViewTaskDetails = () => {
               className="mr-2"
               checked={todo.completed}
               onChange={() => {
-                const updatedTodos = task.todos?.map((t, i) =>
+                const updatedTodos = task.todos!.map((t, i) =>
                   i === index ? { ...t, completed: !t.completed } : t,
                 );
-                setTask((prev) => ({ ...prev, todos: updatedTodos }));
+
+                const newStatus = checkTodosCompletion(updatedTodos);
+
+                dispatch(
+                  updateTaskStatus({
+                    _id: task._id,
+                    status: newStatus,
+                    todos: updatedTodos,
+                  }),
+                );
               }}
             />
             <span>{todo.text}</span>

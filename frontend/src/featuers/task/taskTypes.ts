@@ -42,7 +42,7 @@ export interface CreateTaskPayload {
   status?: "pending" | "in-progress" | "completed";
   dueDate?: string;          // sending as ISO string from <input type="date">
   assignedTo?: string[];
-  todos?: { text: string }[];
+  todos?: { text: string, completed: boolean }[];
   attachments?: string[];
 }
 export interface UpdateTaskPayload {
@@ -55,4 +55,16 @@ export interface UpdateTaskPayload {
   assignedTo?: string[];
   todos?: { text: string, completed: boolean }[];
   attachments?: string[];
+}
+
+
+export type TaskStatus = "pending" | "in-progress" | "completed";
+
+export interface UpdateTaskStatusPayload {
+  _id: string;
+  status: TaskStatus;
+  todos: {
+    text: string;
+    completed: boolean;
+  }[];
 }

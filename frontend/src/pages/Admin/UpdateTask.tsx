@@ -13,6 +13,7 @@ import {
 import { toast } from "react-toastify";
 import ConfirmModal from "../../components/Modals/ConfirmModal";
 import type { UpdateTaskPayload } from "../../featuers/task/taskTypes";
+import { BeatLoader } from "react-spinners";
 
 const UpdateTask = () => {
   const initialTask: UpdateTaskPayload = {
@@ -32,7 +33,7 @@ const UpdateTask = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { users } = useSelector((state: RootState) => state.user);
-  const { selectedTask, updateTaskLoading } = useSelector(
+  const { selectedTask,selectedLoadingTask,updateTaskLoading } = useSelector(
     (state: RootState) => state.task,
   );
 
@@ -62,7 +63,7 @@ const UpdateTask = () => {
   /* ================= PREFILL FORM ================= */
 
   useEffect(() => {
-    if (!selectedTask) return;
+    if (!selectedTask) return
 
     setTask({
       _id: selectedTask._id,
@@ -78,6 +79,9 @@ const UpdateTask = () => {
       attachments: selectedTask.attachments ?? [],
     });
   }, [selectedTask]);
+
+
+  
 
   /* ================= HANDLERS ================= */
 
@@ -173,6 +177,21 @@ const UpdateTask = () => {
     }
   };
 
+  if(selectedLoadingTask) {
+  return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <BeatLoader size={15} color="#2563EB" />
+      </div>
+  );
+}
+
+if (!selectedTask) {
+  return (
+    <div className="p-4 text-gray-500">
+      Task not found.
+    </div>
+  );
+}
   /* ================= UI ================= */
   return (
     <div className="px-2 py-4">

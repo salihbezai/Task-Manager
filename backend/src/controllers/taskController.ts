@@ -190,21 +190,23 @@ export const getTaskById = async (req: Request, res: Response): Promise<void> =>
 // update task status
 export const updateTaskStatus = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const  { status } = req.body;
+    const taskToBeUpdated = req.body
     try {
         const task = await Task.findById(id);
         if (!task) {
             res.status(404).json({ message: "Task not found" });
             return;
         }
-        // ownership check
-        if (task.createdBy?.toString() !== req.user?.id) {
+        // check assignment      
+        const isAssignedTo = task.assignedTo?.some((id)=>id.toString() === req.user?.id)
+        if (!isAssignedTo) {
             res.status(403).json({ message: "You are not authorized to update this task" });
             return;
         }
-        task.status = status;
-        const updatedTask = await task.save()
-        res.status(200).json(updatedTask);
+         task.status = taskToBeUpdated.status;
+         task.todos = taskToBeUpdated.todos;
+         const updatedTask = await task.save()
+         res.status(200).json(updatedTask);
     }catch (error) {
         logger.error({
             message: "Error updating task status",

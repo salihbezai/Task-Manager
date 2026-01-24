@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { getErrorMessage } from "../../utils/errorHelper";
-import type { CreateTaskPayload, Task, UpdateTaskPayload } from "./taskTypes";
+import type { CreateTaskPayload, Task, UpdateTaskPayload, UpdateTaskStatusPayload } from "./taskTypes";
 
 
 export interface DashboardStats {
@@ -101,6 +101,22 @@ const updateTask = createAsyncThunk<Task, UpdateTaskPayload, { rejectValue: stri
   },
 );
 
+// update task status
+const updateTaskStatus = createAsyncThunk<Task,UpdateTaskStatusPayload, { rejectValue: string }>(
+  "task/updateTaskStatus",
+  async (task, { rejectWithValue }) => {
+    try {
+      const { data } = await api.put(`/tasks/${task._id}/status`, task);
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+
+
+
 // delete task
 const deleteTask = createAsyncThunk<string, string, { rejectValue: string }>(
   "task/deleteTask",
@@ -155,5 +171,6 @@ export {
   updateTask,
   deleteTask,
   downloadTasksCSV,
-  getUserTasks
+  getUserTasks,
+  updateTaskStatus
 };

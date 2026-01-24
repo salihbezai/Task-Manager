@@ -9,8 +9,10 @@ import {
   getUserDashboardData,
   getUserTasks,
   updateTask,
+  updateTaskStatus,
 } from "./taskActions";
 import type { TaskState } from "./taskTypes";
+import { toast } from "react-toastify";
 
 
 
@@ -158,6 +160,27 @@ const taskSlice = createSlice({
       state.updateTaskError = null;
     });
     builder.addCase(updateTask.rejected, (state, action) => {
+      state.updateTaskLoading = false;
+      state.updateTaskError = action.payload ?? null;
+    })
+    // update task status 
+    builder.addCase(updateTaskStatus.pending, (state) => {
+      state.updateTaskLoading = true;
+      state.updateTaskError = null;
+    });
+    builder.addCase(updateTaskStatus.fulfilled, (state, action) => {
+      state.updateTaskLoading = false;
+      state.selectedTask = action.payload;
+      // also update the task in the tasks array
+      const index = state.tasks.findIndex(
+        (task) => task._id === action.payload._id,
+      );
+      if (index !== -1) {
+        state.tasks[index] = action.payload;
+      }
+      state.updateTaskError = null;
+    });
+    builder.addCase(updateTaskStatus.rejected, (state, action) => {
       state.updateTaskLoading = false;
       state.updateTaskError = action.payload ?? null;
     })
