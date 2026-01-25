@@ -96,6 +96,7 @@ This project follows clean architecture principles, normalized state management,
 
 cd backend
 
+```bash
 
 2.Install dependencies:
 
@@ -103,6 +104,7 @@ cd backend
 
 npm install
 
+```bash
 3.Create a .env file:
 
 ```bash
