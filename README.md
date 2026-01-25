@@ -132,4 +132,9 @@ npm install
 npm run dev
 ```
 
+## 📬 Contact
+
+- GitHub: [salihbezai](https://github.com/salihbezai)
+- Email: salihbezai98@gmail.com
+
 
