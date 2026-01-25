@@ -96,7 +96,7 @@ This project follows clean architecture principles, normalized state management,
 
 cd backend
 
-```bash
+```
 
 2.Install dependencies:
 
@@ -104,7 +104,7 @@ cd backend
 
 npm install
 
-```bash
+```
 3.Create a .env file:
 
 ```bash
@@ -113,12 +113,15 @@ PORT=5000
 MONGO_URI=<your-mongodb-uri>
 JWT_SECRET=<your-jwt-secret>
 
+```
+
 4.Run the server:
 
 ```bash
 
 npm run dev
 
+```
 
 ### Frontend
 
@@ -127,6 +130,6 @@ npm run dev
 cd frontend
 npm install
 npm run dev
-
+```
 
 
