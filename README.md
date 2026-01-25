@@ -100,11 +100,13 @@ cd backend
 2.Install dependencies:
 
 ```bash
+
 npm install
 
 3.Create a .env file:
 
 ```bash
+
 PORT=5000
 MONGO_URI=<your-mongodb-uri>
 JWT_SECRET=<your-jwt-secret>
@@ -112,12 +114,14 @@ JWT_SECRET=<your-jwt-secret>
 4.Run the server:
 
 ```bash
+
 npm run dev
 
 
 ### Frontend
 
 ```bash
+
 cd frontend
 npm install
 npm run dev
