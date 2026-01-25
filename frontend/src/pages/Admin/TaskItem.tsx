@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 const TaskItem = ({ task }: { task: Task }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { users } = useSelector((state: RootState) => state.user);
 
   const totalTodos = task && task.todos.length;
   const completedTodos = task && task.todos.filter((t) => t.completed).length;
@@ -16,16 +17,21 @@ const TaskItem = ({ task }: { task: Task }) => {
 
   // assigned users display logic
   const MAX_VISIBLE_USERS = 3;
-
-  const assignedUsers= task?.assignedTo || [];
-  const visibleUsers = assignedUsers.slice(0, MAX_VISIBLE_USERS);
+  const assignedUsers = task?.assignedTo || [];
+  const visibleUsers = users
+    .filter((u) => task.assignedTo?.includes(u._id))
+    .slice(0, MAX_VISIBLE_USERS);
   const extraCount = assignedUsers.length - visibleUsers.length;
 
   return (
     <div
       className="w-full bg-white px-3 py-3 rounded-sm shadow-lg 
       cursor-pointer hover:shadow-xl transition-shadow duration-300"
-      onClick={() => user?.role==="admin"? navigate(`/admin/update-task/${task._id}`):navigate(`/user/task-details/${task._id}`)}
+      onClick={() =>
+        user?.role === "admin"
+          ? navigate(`/admin/update-task/${task._id}`)
+          : navigate(`/user/task-details/${task._id}`)
+      }
     >
       <div className="py-2 flex gap-4">
         <span
@@ -129,7 +135,7 @@ const TaskItem = ({ task }: { task: Task }) => {
         </div>
 
         {/* attachments */}
-        {((task.attachments?.length) ?? 0 )> 0 && (
+        {(task.attachments?.length ?? 0) > 0 && (
           <div className="flex flex-row gap-1 items-center bg-[#EBF3FE] px-2 py-1 rounded">
             <MdAttachment size={25} />
             <span>{task.attachments?.length}</span>

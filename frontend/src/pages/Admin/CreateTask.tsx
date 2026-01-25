@@ -16,7 +16,7 @@ const CreateTask = () => {
     status: "pending",
     dueDate: "",
     assignedTo: [] as string[],
-    todos: [] as { text: string }[],
+    todos: [] as { text: string, completed: boolean }[],
     attachments: [] as string[],
   };
   const dispatch = useDispatch<AppDispatch>();
@@ -77,7 +77,7 @@ const CreateTask = () => {
 
     setTask((prev) => ({
       ...prev,
-      todos: [...(prev.todos || []), { text: inputTodo.trim() }],
+      todos: [...(prev.todos || []), { text: inputTodo.trim(), completed: false }],
     }));
 
     setInputTodo("");

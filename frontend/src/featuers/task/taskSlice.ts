@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   createTask,
   deleteTask,
@@ -11,8 +11,7 @@ import {
   updateTask,
   updateTaskStatus,
 } from "./taskActions";
-import type { TaskState } from "./taskTypes";
-import { toast } from "react-toastify";
+import type { Task, TaskState } from "./taskTypes";
 
 
 
@@ -133,7 +132,7 @@ const taskSlice = createSlice({
       state.selectedLoadingTask = true;
       state.selectedErrorTask = null;
     });
-    builder.addCase(fetchTaskById.fulfilled, (state, action) => {
+    builder.addCase(fetchTaskById.fulfilled, (state, action:PayloadAction<Task>) => {
       state.selectedLoadingTask = false;
       state.selectedTask = action.payload;
       state.selectedErrorTask = null;

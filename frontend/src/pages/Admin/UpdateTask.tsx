@@ -57,8 +57,9 @@ const UpdateTask = () => {
     if (id) {
       dispatch(fetchTaskById(id));
     }
-    dispatch(fetchUsers());
-  }, [dispatch, id]);
+    if (!users.length) dispatch(fetchUsers());
+
+  }, [dispatch, id, users.length]);
 
   /* ================= PREFILL FORM ================= */
 
