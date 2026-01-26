@@ -1,4 +1,3 @@
-import type { User } from "../user/userTypes";
 
 export interface Task {
   _id: string;
