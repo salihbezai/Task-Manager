@@ -145,6 +145,7 @@ export const deleteTask = async (
 // get tasks
 export const getTasks = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log("is running from the test ?")
     const tasks = await Task.find().populate(
       "createdBy",
       "name email profileImageUrl",
