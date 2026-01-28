@@ -16,6 +16,12 @@ interface RegisterRequestBody {
   profileImageUrl?: string;
   inviteToken?: string;
 }
+export interface UpdateRequestBody {
+  name?: string;
+  email?: string;
+  password?: string;
+  profileImageUrl?: string;
+}
 
 export interface JWTPayload {
   id: string;
@@ -138,7 +144,9 @@ export const login = async (req: Request, res: Response) => {
     // compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password." });
+            console.log("is here at if (!isMatch) {")
+
+      return res.status(401).json({ message: "Invalid email or password." });
     }
 
     // generate jwt token
@@ -207,7 +215,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
-    const updateData = req.body as Partial<RegisterRequestBody>;
+    const updateData = req.body as Partial<UpdateRequestBody>;
 
     const user = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
@@ -219,8 +227,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       id: user._id.toString(),
       name: user.name,
       email: user.email,
-      profileImageUrl: user.profileImageUrl,
-      role: user.role,
+      profileImageUrl: user.profileImageUrl
     });
   } catch (error) {
     logger.error({
