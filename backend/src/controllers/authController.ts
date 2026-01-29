@@ -91,7 +91,7 @@ export const register = async (req: Request, res: Response) => {
     );
 
     // respond with user data and token
-    const response: RegisterResponse = {
+    const user: RegisterResponse = {
       id: newUser._id.toString(),
       name: newUser.name,
       email: newUser.email,
@@ -102,7 +102,7 @@ export const register = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
-    res.status(201).json(response);
+    res.status(201).json({user});
   } catch (error) {
     logger.error({
       message: "Error during registration",
@@ -173,7 +173,7 @@ export const login = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    res.status(200).json(response);
+    res.status(200).json({user: response});
   } catch (error) {
     logger.error({
       message: "Error during login",
@@ -194,11 +194,13 @@ export const getUserProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found." });
     }
     res.status(200).json({
+      user:{
       id: user._id.toString(),
       name: user.name,
       email: user.email,
       profileImageUrl: user.profileImageUrl,
       role: user.role,
+    }
     });
   } catch (error) {
     logger.error({
@@ -224,10 +226,12 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found." });
     }
     res.status(200).json({
+      user:{
       id: user._id.toString(),
       name: user.name,
       email: user.email,
       profileImageUrl: user.profileImageUrl
+    }
     });
   } catch (error) {
     logger.error({

@@ -9,7 +9,6 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "%%pea8401847§%£µouhfjemakncjfkgi";
 
 export const protect = (req: Request, res: Response, next: NextFunction) => {
-  // const authHeader = req.headers?.authorization;
   const token = req.cookies?.token;
 
   if (!token) {

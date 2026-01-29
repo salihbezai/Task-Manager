@@ -13,7 +13,7 @@ const fetchCurrentUser = createAsyncThunk<
 >("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.get("/auth/me");
-    return data;
+    return data.user;
   } catch (error: unknown) {
     rejectWithValue(getErrorMessage(error));
   }
@@ -32,7 +32,7 @@ const loginUser = createAsyncThunk<
   ) => {
     try {
       const { data } = await api.post("/auth/login", credentials);
-      return data;
+      return data.user;
     } catch (error: unknown) {
       rejectWithValue(getErrorMessage(error));
     }
@@ -64,7 +64,7 @@ const registerUser = createAsyncThunk<
   ) => {
     try {
       const { data } = await api.post("/auth/register", credentials);
-      return data;
+      return data.user;
     } catch (error: unknown) {
       rejectWithValue(getErrorMessage(error));
     }
