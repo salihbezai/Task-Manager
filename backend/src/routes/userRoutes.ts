@@ -26,14 +26,11 @@ router.post("/upload-image", protect, upload.single("image"),async (req, res) =>
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    console.log("the request file is "+req.file)
     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     // update user profile image
     const userId = req.user?.id;
     const updateData = { profileImageUrl: imageUrl };
     const user = await User.findByIdAndUpdate(userId, updateData, { new: true })
-    console.log("the id is "+userId)
-    console.log("look "+JSON.stringify(user))
     res.status(200).json({ imageUrl });
   } catch (error) {
     logger.error({

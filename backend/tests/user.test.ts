@@ -8,7 +8,7 @@ const { setupDatabase, userOne,userOneId, userOneToken } = require("./fixtures/d
 beforeEach(setupDatabase);
 
 
-console.log("user token is "+userOneToken)
+
 
 // should get users
 test("should get users", async () => {
@@ -19,7 +19,24 @@ test("should get users", async () => {
   expect(200);
 });
 
+// should get user by id 
+test("should get user by id", async () => {
+  const response = await request(app)
+    .get(`/api/users/${userOneId}`)
+    .set("Cookie", `token=${userOneToken}`)
+    .expect(200);
 
+  expect(response.body.user).not.toBeNull();
+})
+
+// router.delete("/delete/:id", protect, adminOnly, deleteUserById);
+// should delete user by id (admin only)
+test("should delete user by id (admin only)", async () => {
+  const response = await request(app)
+    .delete(`/api/users/delete/${userOneId}`)
+    .set("Cookie", `token=${userOneToken}`)
+    .expect(200);
+})
 
 // upload image profile
 test("should upload image profile", async () => {
