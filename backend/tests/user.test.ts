@@ -36,6 +36,9 @@ test("should delete user by id (admin only)", async () => {
     .delete(`/api/users/delete/${userOneId}`)
     .set("Cookie", `token=${userOneToken}`)
     .expect(200);
+    // assert that the user was deleted
+    const user = await User.findById(userOneId);
+    expect(user).toBeNull();
 })
 
 // upload image profile

@@ -95,8 +95,6 @@ const setupDatabase = async () => {
     plain_password_user_two,
     salt,
   );
-  console.log("user userTwoToken "+JSON.stringify(userTwoToken))
-  console.log("user two "+JSON.stringify(userTwo))
 
   await new User({ ...userOne, password: hashedPassword_firtst_user }).save();
   await new User({ ...userTwo, password: hashedPassword_second_user }).save();
@@ -113,5 +111,8 @@ module.exports = {
   setupDatabase,
   userTwo,
   userTwoId,
-  userTwoToken
+  userTwoToken,
+  taskOne,
+  taskTwo,
+  taskThree
 };

@@ -66,6 +66,7 @@ export const register = async (req: Request, res: Response) => {
       if (inviteToken === process.env.ADMIN_INVITE_TOKEN) {
         role = "admin";
       } else {
+
         return res.status(400).json({ message: "Invalid invite token." });
       }
     }
@@ -129,6 +130,8 @@ interface LoginResponse {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body as LoginRequestBody;
+
+  // validate required fields
   if (!email || !password) {
     return res
       .status(400)

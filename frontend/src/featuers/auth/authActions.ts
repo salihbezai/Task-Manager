@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { getErrorMessage } from "../../utils/errorHelper";
 import type { userType } from "./userTypes";
+import { toast } from "react-toastify";
 
 
 
@@ -34,6 +35,7 @@ const loginUser = createAsyncThunk<
       const { data } = await api.post("/auth/login", credentials);
       return data.user;
     } catch (error: unknown) {
+      toast.error(error.response.data.message || "Something went wrong, please try again.");
       rejectWithValue(getErrorMessage(error));
     }
   },
@@ -66,6 +68,7 @@ const registerUser = createAsyncThunk<
       const { data } = await api.post("/auth/register", credentials);
       return data.user;
     } catch (error: unknown) {
+      toast.error(error.response.data.message || "Failed to register user, please try again.");
       rejectWithValue(getErrorMessage(error));
     }
   },

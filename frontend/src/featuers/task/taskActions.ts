@@ -41,7 +41,7 @@ const fetchAllTasks = createAsyncThunk<Task[], void, { rejectValue: string }>(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/tasks");
-      return data;
+      return data.tasks;
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -54,7 +54,7 @@ const getUserTasks = createAsyncThunk<Task[], void, { rejectValue: string }>(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/tasks/user-tasks");
-      return data;
+      return data.tasks;
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -81,7 +81,7 @@ const fetchTaskById = createAsyncThunk<Task, string, { rejectValue: string }>(
     try {
       const { data } = await api.get(`/tasks/${id}`);
       console.log("the task id "+JSON.stringify(data))
-      return data;
+      return data.task;
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
     }

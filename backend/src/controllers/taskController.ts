@@ -81,7 +81,8 @@ export const updateTask = async (
       return;
     }
     // ownership check
-    if (task.createdBy?.toString() !== req.user?.id) {
+    // if (task.createdBy?.toString() !== req.user?.id) {
+     if (req.user?.role !== "admin") {
       res
         .status(403)
         .json({ message: "You are not authorized to update this task" });
@@ -94,7 +95,6 @@ export const updateTask = async (
       "assignedTo",
       "name email profileImageUrl",
     );
-
     res.status(200).json(populatedTask);
   } catch (error) {
     logger.error({
@@ -145,12 +145,11 @@ export const deleteTask = async (
 // get tasks
 export const getTasks = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("is running from the test ?")
     const tasks = await Task.find().populate(
       "createdBy",
       "name email profileImageUrl",
     );
-    res.status(200).json(tasks);
+    res.status(200).json({ tasks });
   } catch (error) {
     logger.error({
       message: "Error fetching tasks",
@@ -172,7 +171,7 @@ export const getUserTasks = async (
     const tasks = await Task.find({ assignedTo: userId })
       .populate("createdBy", "name email profileImageUrl")
       .populate("assignedTo", "name email profileImageUrl");
-    res.status(200).json(tasks);
+    res.status(200).json({ tasks });
   } catch (error) {
     logger.error({
       message: "Error fetching user tasks",
@@ -196,7 +195,18 @@ export const getTaskById = async (
       res.status(404).json({ message: "Task not found" });
       return;
     }
-    res.status(200).json(task);
+    // authorization check
+    const isOwner =
+      task.createdBy?.toString() === req.user?.id ||
+      req.user?.role === "admin" ||
+      task.assignedTo?.some((id) => id.toString() === req.user?.id);
+    if (!isOwner) {
+      res
+        .status(403)
+        .json({ message: "You are not authorized to view this task" });
+      return;
+    }
+    res.status(200).json({ task });
   } catch (error) {
     logger.error({
       message: "Error fetching task by ID",
@@ -247,38 +257,6 @@ export const updateTaskStatus = async (
 };
 
 // update task check list
-export const updateTaskCheckList = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const { id } = req.params;
-  const { todos } = req.body;
-  try {
-    const task = await Task.findById(id);
-    if (!task) {
-      res.status(404).json({ message: "Task not found" });
-      return;
-    }
-    // ownership check
-    if (task.createdBy?.toString() !== req.user?.id) {
-      res
-        .status(403)
-        .json({ message: "You are not authorized to update this task" });
-      return;
-    }
-    task.todos = todos;
-    const updatedTask = await task.save();
-    res.status(200).json(updatedTask);
-  } catch (error) {
-    logger.error({
-      message: "Error updating task checklist",
-      error: (error as Error).message,
-      stack: (error as Error).stack,
-      route: req.originalUrl,
-    });
-    res.status(500).json({ message: "Failed to update task checklist" });
-  }
-};
 
 // get dashbaord data
 export const getDashboardData = async (
