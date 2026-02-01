@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -22,10 +22,10 @@ import UserLayout from "./components/layout/UserLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UpdateTask from "./pages/Admin/UpdateTask";
-import path from 'path';
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     dispatch(fetchCurrentUser());
@@ -37,7 +37,11 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
+          <Route
+            path="/"
+            element={user?.role === "admin" ? <Navigate to="/admin/dashboard" /> 
+              : <Navigate to="/user/dashboard" />}
+          />
           {/* Admin Routes */}
 
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
