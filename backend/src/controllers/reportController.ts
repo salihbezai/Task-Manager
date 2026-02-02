@@ -8,7 +8,6 @@ export const exportTaskReport = async (req: Request, res: Response) => {
   // Logic to generate and send task report
   try {
     const tasks = await Task.find().populate("assignedTo", "name email");
-
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet("Tasks Report");
     worksheet.columns = [
@@ -44,6 +43,7 @@ export const exportTaskReport = async (req: Request, res: Response) => {
       "attachment; filename=tasks_report.xlsx",
     );
     await workbook.xlsx.write(res);
+    console.log("the response that we got from the controller "+workbook)
     res.status(200).end();
   } catch (error) {
     logger.error({

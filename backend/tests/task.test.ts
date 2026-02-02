@@ -158,7 +158,7 @@ test("should update task by id", async () => {
       title: "Task 1 updated",
     })
     .expect(200);
-  const task = await Task.findById(taskOne._id)
+  const task = await Task.findById(taskOne._id);
   expect(task?.title).toBe("Task 1 updated");
 });
 
@@ -200,7 +200,80 @@ test("should update task status", async () => {
       status: "completed",
     })
     .expect(200);
-    // assert the task status is completed
+  // assert the task status is completed
   const task = await Task.findById(taskOne._id);
   expect(task?.status).toBe("completed");
+});
+
+// should get dashboard data  by admin only
+test("should get dashboard data  by admin only", async () => {
+  await request(app)
+    .get(`/api/tasks/dashboard-data`)
+    .set("Cookie", `token=${userOneToken}`)
+    .expect(200);
+  expect(200);
+});
+
+// should not get dashboard data by a member user
+test("should not get dashboard data by a member user", async () => {
+  await request(app)
+    .get(`/api/tasks/dashboard-data`)
+    .set("Cookie", `token=${userTwoToken}`)
+    .expect(403);
+});
+
+// should get user dashboard data by normal user
+test("should get user dashboard data by normal user", async () => {
+  await request(app)
+    .get(`/api/tasks/user-dashboard-data`)
+    .set("Cookie", `token=${userTwoToken}`)
+    .expect(200);
+  expect(200);
+});
+
+
+// should get task report by admin only
+test("should get task report by admin only", async () => {
+  const response =await request(app)
+    .get(`/api/reports/export/tasks`)
+    .set("Cookie", `token=${userOneToken}`)
+    .expect(200);
+
+    expect(response.headers["content-type"]).
+    toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+    expect(response.headers["content-disposition"]).
+    toContain("tasks_report.xlsx");
+
+});
+
+// should not get task report by a member user
+test("should not get task report by a member user", async () => {
+  await request(app)
+    .get(`/api/reports/export/tasks`)
+    .set("Cookie", `token=${userTwoToken}`)
+    .expect(403);
+});
+
+// should get user report by admin only
+test("should get user report by admin only", async () => {
+  const response =await request(app)
+    .get(`/api/reports/export/users`)
+    .set("Cookie", `token=${userOneToken}`)
+    .expect(200);
+
+    expect(response.headers["content-type"]).
+    toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+    expect(response.headers["content-disposition"]).
+    toContain("users_report.xlsx");
+
+});
+
+// should not get user report by a member user
+test("should not get user report by a member user", async () => {
+  await request(app)
+    .get(`/api/reports/export/users`)
+    .set("Cookie", `token=${userTwoToken}`)
+    .expect(403);
 });

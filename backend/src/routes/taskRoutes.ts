@@ -15,7 +15,7 @@ import { adminOnly, protect } from "../middlewares/authMiddleware";
 const router = Router();
 
 // dashboard data
-router.get("/dashboard-data", protect, getDashboardData);
+router.get("/dashboard-data", protect,adminOnly, getDashboardData);
 
 // user dashboard data
 router.get("/user-dashboard-data", protect, getUserDashboardData);
