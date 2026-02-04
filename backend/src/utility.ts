@@ -12,9 +12,7 @@ const logger: winston.Logger = winston.createLogger({
   ],
 });
 
- function sum(a: number, b: number): number {
-  return a + b;
-}
 
 
-export { logger, sum};
+
+export { logger};
