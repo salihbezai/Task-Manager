@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { logger } from "../utility";
+import { generateAccessToken, generateRefreshToken } from "../helper";
 
 dotenv.config();
 
@@ -25,7 +26,6 @@ export interface UpdateRequestBody {
 
 export interface JWTPayload {
   id: string;
-  email: string;
   role: "member" | "admin";
 }
 
@@ -66,7 +66,6 @@ export const register = async (req: Request, res: Response) => {
       if (inviteToken === process.env.ADMIN_INVITE_TOKEN) {
         role = "admin";
       } else {
-
         return res.status(400).json({ message: "Invalid invite token." });
       }
     }
@@ -80,16 +79,13 @@ export const register = async (req: Request, res: Response) => {
       role: role || "member",
     });
 
-    // generate jwt token
-    const token = jwt.sign(
-      {
-        id: newUser._id.toString(),
-        email,
-        role: newUser.role,
-      } as JWTPayload,
-      JWT_SECRET,
-      { expiresIn: "7d" },
+    const accessToken = generateAccessToken(
+      newUser._id.toString(),
+      newUser.role,
     );
+    const token = generateRefreshToken(newUser._id.toString());
+    newUser.refreshTokens.push({ token, createdAt: new Date() });
+    await newUser.save();
 
     // respond with user data and token
     const user: RegisterResponse = {
@@ -99,11 +95,11 @@ export const register = async (req: Request, res: Response) => {
       profileImageUrl: newUser.profileImageUrl,
       role: newUser.role,
     };
-    res.cookie("token", token, {
+    res.cookie("refreshToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
-    res.status(201).json({user});
+    res.status(201).json({ user, token: accessToken });
   } catch (error) {
     logger.error({
       message: "Error during registration",
@@ -149,17 +145,12 @@ export const login = async (req: Request, res: Response) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password." });
     }
+    const accessToken = generateAccessToken(user._id.toString(), user.role);
+    const refreshToken = generateRefreshToken(user._id.toString());
 
-    // generate jwt token
-    const token = jwt.sign(
-      {
-        id: user._id.toString(),
-        email,
-        role: user.role,
-      } as JWTPayload,
-      JWT_SECRET,
-      { expiresIn: "7d" },
-    );
+    // save refresh token to db
+    user.refreshTokens.push({ token: refreshToken, createdAt: new Date() });
+    await user.save();
 
     // respond with user data and token
     const response: LoginResponse = {
@@ -169,12 +160,11 @@ export const login = async (req: Request, res: Response) => {
       profileImageUrl: user.profileImageUrl,
       role: user.role,
     };
-    res.cookie("token", token, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
-
-    res.status(200).json({user: response});
+    res.status(200).json({ user: response, token: accessToken });
   } catch (error) {
     logger.error({
       message: "Error during login",
@@ -183,6 +173,58 @@ export const login = async (req: Request, res: Response) => {
       route: req.originalUrl,
     });
     res.status(500).json({ message: "Server error during login." });
+  }
+};
+
+// refresth rotation
+export const refresh = async (req: Request, res: Response) => {
+  try {
+    const oldToken = req.cookies.refreshToken;
+    console.log("the oldtoken "+oldToken)
+    if (!oldToken) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    let payload: JWTPayload | null = null;
+    try {
+      payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
+    } catch (error) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const user = await User.findById(payload.id);
+
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const tokenExists = user.refreshTokens.some((t) => t.token === oldToken);
+    // reuse detection
+    if (!tokenExists) {
+      user.refreshTokens = [];
+      await user.save();
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+    // rotate token
+    user.refreshTokens = user.refreshTokens.filter((t) => t.token !== oldToken);
+    const newRefreshToken = generateRefreshToken(user._id.toString());
+    const accessToken = generateAccessToken(user._id.toString(), user.role);
+
+    user.refreshTokens.push({ token: newRefreshToken, createdAt: new Date() });
+    await user.save();
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.status(200).json({ user, token: accessToken });
+  } catch (error) {
+    logger.error({
+      message: "Error during refresh",
+      error: (error as Error).message,
+      stack: (error as Error).stack,
+      route: req.originalUrl,
+    });
+    res.status(500).json({ message: "Server error during refresh." });
   }
 };
 
@@ -195,13 +237,13 @@ export const getUserProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found." });
     }
     res.status(200).json({
-      user:{
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      profileImageUrl: user.profileImageUrl,
-      role: user.role,
-    }
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        profileImageUrl: user.profileImageUrl,
+        role: user.role,
+      },
     });
   } catch (error) {
     logger.error({
@@ -227,12 +269,12 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found." });
     }
     res.status(200).json({
-      user:{
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      profileImageUrl: user.profileImageUrl
-    }
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        profileImageUrl: user.profileImageUrl,
+      },
     });
   } catch (error) {
     logger.error({
@@ -247,8 +289,22 @@ export const updateUserProfile = async (req: Request, res: Response) => {
 
 // logout user
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie("token");
-  res
-    .status(200)
-    .json({ loggedOut: true, message: "User logged out successfully." });
+  const token = req.cookies?.refreshToken;
+  // find the user by token
+  if (token) {
+    const user = await User.findOne({
+      refreshTokens: { $elemMatch: { token } },
+    });
+
+    if (user) {
+      // delete refresh token from db
+      user.refreshTokens = user.refreshTokens.filter(
+        (refreshToken) => refreshToken.token !== token,
+      );
+      await user.save();
+
+      res.clearCookie("refreshToken");
+      res.status(200).json({ message: "Logout successful." });
+    }
+  }
 };

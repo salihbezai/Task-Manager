@@ -22,14 +22,30 @@ import UserLayout from "./components/layout/UserLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UpdateTask from "./pages/Admin/UpdateTask";
+import { setAccessToken } from "./api/tokenService";
+import api from "./api/axios";
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
 
+
+
   useEffect(() => {
-    dispatch(fetchCurrentUser());
-  }, [dispatch]);
+  const initAuth = async () => {
+    try {
+      const res = await api.post("/auth/refresh");
+      setAccessToken(res.data.accessToken);
+
+     await dispatch(fetchCurrentUser());
+    } catch(error: unknown) {
+      console.log("soemthing went wrong")
+    }
+  };
+
+  initAuth();
+}, [dispatch]);
+
 
   return (
     <div>

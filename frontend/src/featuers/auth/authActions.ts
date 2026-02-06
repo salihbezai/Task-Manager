@@ -1,8 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { getErrorMessage } from "../../utils/errorHelper";
-import type { userType } from "./userTypes";
+import type { loginResponse, registerResponse, userType } from "./userTypes";
 import { toast } from "react-toastify";
+import { clearAccessToken, getAccessToken, setAccessToken } from "../../api/tokenService";
 
 
 
@@ -22,7 +23,7 @@ const fetchCurrentUser = createAsyncThunk<
 
 // login user thunk
 const loginUser = createAsyncThunk<
-  userType,
+  loginResponse,
   { email: string; password: string },
   { rejectValue: string }
 >(
@@ -33,7 +34,8 @@ const loginUser = createAsyncThunk<
   ) => {
     try {
       const { data } = await api.post("/auth/login", credentials);
-      return data.user;
+      setAccessToken(data.token);
+      return data;
     } catch (error: unknown) {
       toast.error(error.response.data.message || "Something went wrong, please try again.");
       rejectWithValue(getErrorMessage(error));
@@ -43,7 +45,7 @@ const loginUser = createAsyncThunk<
 
 // signup user thunk
 const registerUser = createAsyncThunk<
-  userType,
+  registerResponse,
   {
     name: string;
     email: string;
@@ -66,20 +68,34 @@ const registerUser = createAsyncThunk<
   ) => {
     try {
       const { data } = await api.post("/auth/register", credentials);
-      return data.user;
+      setAccessToken(data.token);
+      return data;
     } catch (error: unknown) {
       toast.error(error.response.data.message || "Failed to register user, please try again.");
       rejectWithValue(getErrorMessage(error));
     }
   },
 );
-
+//  refresh token
+const refreshToken = createAsyncThunk<loginResponse, void, { rejectValue: string }>(
+  "auth/refreshToken",
+  async (_, { rejectWithValue }) => {
+    try {
+     const { data} =  await api.get("/auth/refresh");
+      setAccessToken(data.token);
+      return data;
+    } catch (error: unknown) {
+      rejectWithValue(getErrorMessage(error));
+    }
+  },
+)
 // logout user
 const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
       await api.get("/auth/logout");
+      clearAccessToken();
       return;
     } catch (error: unknown) {
       rejectWithValue(getErrorMessage(error));
@@ -87,4 +103,4 @@ const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   },
 );
 
-export { fetchCurrentUser, loginUser, registerUser, logoutUser };
+export { fetchCurrentUser, loginUser, registerUser, refreshToken, logoutUser };
