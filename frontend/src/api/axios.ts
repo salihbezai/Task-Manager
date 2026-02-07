@@ -53,44 +53,35 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // 🚨 if refresh itself failed → logout
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      originalRequest.url === "/auth/refresh"
     ) {
+      return Promise.reject(error);
+    }
+
+    // normal access-token refresh flow
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
-        });
-      }
-
-      isRefreshing = true;
 
       try {
         const res = await api.post("/auth/refresh");
-        const newToken = res.data.token;
+        setAccessToken(res.data.token);
 
-        setAccessToken(newToken);
-        processQueue(null, newToken);
+        originalRequest.headers.Authorization =
+          `Bearer ${res.data.token}`;
 
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (err) {
-        processQueue(err, null);
-        clearAccessToken();
         return Promise.reject(err);
-      } finally {
-        isRefreshing = false;
       }
     }
 
     return Promise.reject(error);
   }
 );
+
 
 
 

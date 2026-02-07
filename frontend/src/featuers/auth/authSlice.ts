@@ -10,24 +10,20 @@ import type { userType } from "./userTypes";
 
 interface AuthState {
   user: null | userType;
-  token: null | string;
   loading: boolean;
   error: null | string;
   loginError: null | string;
   loginLoading: boolean;
-  refreshLoading: boolean;
   registerError: null | string;
   registerLoading: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  token: null,
   loading: true,
   error: null,
   loginError: null,
   loginLoading: false,
-  refreshLoading: false,
   registerError: null,
   registerLoading: false,
 };
@@ -70,7 +66,6 @@ const authSlice = createSlice({
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.loginLoading = false;
       state.user = action.payload.user;
-      state.token = action.payload.token;
       state.loginError = null;
     });
     builder.addCase(loginUser.rejected, (state, action) => {
@@ -86,24 +81,24 @@ const authSlice = createSlice({
     builder.addCase(registerUser.fulfilled, (state, action) => {
       state.registerLoading = false;
       state.user = action.payload.user;
-      state.token = action.payload.token;
       state.registerError = null;
     });
     builder.addCase(registerUser.rejected, (state, action) => {
       state.registerLoading = false;
       state.registerError = action.payload ?? null;
     });
-    // refresh token
+    // refresh Token
     builder.addCase(refreshToken.pending, (state) => {
-      state.refreshLoading = true;
+      state.loading = true;
+      state.error = null;
     });
     builder.addCase(refreshToken.fulfilled, (state, action) => {
-      state.refreshLoading = false;
-      state.token = action.payload.token;
+      state.loading = false;
+      state.error = null;
     });
-    builder.addCase(refreshToken.rejected, (state) => {
-      state.token = null;
-      state.refreshLoading = false;
+    builder.addCase(refreshToken.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload ?? null;
     });
 
     // logout user

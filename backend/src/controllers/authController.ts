@@ -180,16 +180,17 @@ export const login = async (req: Request, res: Response) => {
 export const refresh = async (req: Request, res: Response) => {
   try {
     const oldToken = req.cookies.refreshToken;
-    console.log("the oldtoken "+oldToken)
     if (!oldToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     let payload: JWTPayload | null = null;
-    try {
-      payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
-    } catch (error) {
+
+    payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
+
+    if (!payload) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
     const user = await User.findById(payload.id);
 
     if (!user) {
@@ -209,7 +210,11 @@ export const refresh = async (req: Request, res: Response) => {
     const accessToken = generateAccessToken(user._id.toString(), user.role);
 
     user.refreshTokens.push({ token: newRefreshToken, createdAt: new Date() });
-    await user.save();
+    
+    await User.updateOne(
+      { _id: payload.id },
+      { $set: { refreshTokens: user.refreshTokens } },
+    );
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
@@ -224,6 +229,7 @@ export const refresh = async (req: Request, res: Response) => {
       stack: (error as Error).stack,
       route: req.originalUrl,
     });
+    console.log("the error is here " + error);
     res.status(500).json({ message: "Server error during refresh." });
   }
 };

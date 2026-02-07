@@ -81,11 +81,12 @@ const refreshToken = createAsyncThunk<loginResponse, void, { rejectValue: string
   "auth/refreshToken",
   async (_, { rejectWithValue }) => {
     try {
-     const { data} =  await api.get("/auth/refresh");
+     const { data} =  await api.post("/auth/refresh");
       setAccessToken(data.token);
       return data;
     } catch (error: unknown) {
-      rejectWithValue(getErrorMessage(error));
+       console.log("errorr ")
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 )

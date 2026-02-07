@@ -14,7 +14,7 @@ import UserDashboard from "./pages/User/UserDashboard";
 import MyTasks from "./pages/User/MyTasks";
 import ViewTaskDetails from "./pages/User/ViewTaskDetails";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCurrentUser } from "./featuers/auth/authActions";
+import { fetchCurrentUser, logoutUser, refreshToken } from "./featuers/auth/authActions";
 import type { AppDispatch, RootState } from "./store/store";
 import AdminLayout from "./components/layout/AdminLayout";
 import UserLayout from "./components/layout/UserLayout";
@@ -24,6 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 import UpdateTask from "./pages/Admin/UpdateTask";
 import { setAccessToken } from "./api/tokenService";
 import api from "./api/axios";
+import { BeatLoader } from "react-spinners";
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,12 +33,11 @@ const App = () => {
 
 
   useEffect(() => {
+
   const initAuth = async () => {
     try {
-      const res = await api.post("/auth/refresh");
-      setAccessToken(res.data.accessToken);
-
-     await dispatch(fetchCurrentUser());
+      await dispatch(refreshToken()).unwrap()
+      await dispatch(fetchCurrentUser()).unwrap(); 
     } catch(error: unknown) {
       console.log("soemthing went wrong")
     }
@@ -45,6 +45,8 @@ const App = () => {
 
   initAuth();
 }, [dispatch]);
+
+
 
 
   return (

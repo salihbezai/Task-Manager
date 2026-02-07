@@ -17,7 +17,7 @@ const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
     );
   }
 
-  if (!user || !allowedRoles.includes(user.role)) {
+  if ((!user || !allowedRoles.includes(user.role) )) {
     return <Navigate to="/login" />;
   }
 
