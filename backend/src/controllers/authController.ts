@@ -180,6 +180,7 @@ export const login = async (req: Request, res: Response) => {
 export const refresh = async (req: Request, res: Response) => {
   try {
     const oldToken = req.cookies.refreshToken;
+    
     if (!oldToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }

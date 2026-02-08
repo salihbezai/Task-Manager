@@ -3,7 +3,6 @@ import {
   fetchCurrentUser,
   loginUser,
   logoutUser,
-  refreshToken,
   registerUser,
 } from "./authActions";
 import type { userType } from "./userTypes";
@@ -87,19 +86,7 @@ const authSlice = createSlice({
       state.registerLoading = false;
       state.registerError = action.payload ?? null;
     });
-    // refresh Token
-    builder.addCase(refreshToken.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(refreshToken.fulfilled, (state, action) => {
-      state.loading = false;
-      state.error = null;
-    });
-    builder.addCase(refreshToken.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload ?? null;
-    });
+  
 
     // logout user
     builder.addCase(logoutUser.pending, (state) => {

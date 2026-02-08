@@ -83,6 +83,52 @@ api.interceptors.response.use(
 );
 
 
+api.interceptors.response.use(
+  res => res,
+  async error => {
+    const originalRequest = error.config;
+
+    if (error.response?.status !== 401) {
+      return Promise.reject(error);
+    }
+
+    if (originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({
+          resolve: (token: string) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(api(originalRequest));
+          },
+          reject,
+        });
+      });
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      const res = await api.post("/auth/refresh");
+      const newToken = res.data.token;
+
+      setAccessToken(newToken);
+      processQueue(null, newToken);
+
+      originalRequest.headers.Authorization = `Bearer ${newToken}`;
+      return api(originalRequest);
+    } catch (err) {
+      processQueue(err, null);
+      clearAccessToken();
+      return Promise.reject(err);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);
 
 
 export default api;
