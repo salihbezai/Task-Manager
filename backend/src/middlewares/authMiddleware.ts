@@ -23,6 +23,7 @@ try {
   req.user = decoded;
   next();
 } catch (error) {
+  console.log("here in catch")
   logger.error({
     message: "Error verifying token",
     error: (error as Error).message,

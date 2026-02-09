@@ -7,6 +7,7 @@ import { clearAccessToken, getAccessToken, setAccessToken } from "../../api/toke
 
 
 
+
 // fetch logged in user
 const fetchCurrentUser = createAsyncThunk<
   userType,
@@ -85,7 +86,6 @@ const refreshToken = createAsyncThunk<loginResponse, void, { rejectValue: string
       setAccessToken(data.token);
       return data;
     } catch (error: unknown) {
-       console.log("errorr ")
       return rejectWithValue(getErrorMessage(error));
     }
   },

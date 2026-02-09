@@ -9,7 +9,7 @@ interface PrivatRouteProps {
 }
 const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
   const { user, loading } = useSelector((state: RootState) => state.auth);
-  if (loading && !user) {
+  if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
         <BeatLoader size={15} color="#2563EB" />
@@ -17,7 +17,9 @@ const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
     );
   }
 
-  if ((!user || !allowedRoles.includes(user.role) )) {
+
+
+  if (!user && !loading ) {
     return <Navigate to="/login" />;
   }
 

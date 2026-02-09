@@ -40,6 +40,7 @@ const Login = () => {
     }
   }, [navigate, user]);
 
+  
   return (
     <div className="min-h-screen  flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-xl">

@@ -3,6 +3,7 @@ import {
   fetchCurrentUser,
   loginUser,
   logoutUser,
+  refreshToken,
   registerUser,
 } from "./authActions";
 import type { userType } from "./userTypes";
@@ -15,6 +16,7 @@ interface AuthState {
   loginLoading: boolean;
   registerError: null | string;
   registerLoading: boolean;
+  initialized: boolean;
 }
 
 const initialState: AuthState = {
@@ -25,6 +27,7 @@ const initialState: AuthState = {
   loginLoading: false,
   registerError: null,
   registerLoading: false,
+  initialized: false,
 };
 
 const authSlice = createSlice({
@@ -86,7 +89,21 @@ const authSlice = createSlice({
       state.registerLoading = false;
       state.registerError = action.payload ?? null;
     });
-  
+    //  refresh token
+    builder.addCase(refreshToken.pending, (state) => {
+      state.loading = true;
+    });
+
+    builder.addCase(refreshToken.fulfilled, (state, action) => {
+      state.loading = false;
+      state.initialized = true;
+    });
+
+    builder.addCase(refreshToken.rejected, (state) => {
+      state.loading = false;
+      state.initialized = true;
+      state.user = null;
+    });
 
     // logout user
     builder.addCase(logoutUser.pending, (state) => {
@@ -94,10 +111,12 @@ const authSlice = createSlice({
       state.error = null;
     });
     builder.addCase(logoutUser.fulfilled, (state) => {
+      state.loading = false;
       state.user = null;
       state.error = null;
     });
     builder.addCase(logoutUser.rejected, (state, action) => {
+      state.loading = false;
       state.error = action.payload ?? null;
     });
   },

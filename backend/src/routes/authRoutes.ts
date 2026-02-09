@@ -16,7 +16,7 @@ router.post("/login", login);
 router.get("/me", protect, getUserProfile);
 router.post("/refresh", refresh);
 router.put("/profile", protect, updateUserProfile);
-router.get("/logout", protect, logout);
+router.get("/logout", logout);
 
 
 

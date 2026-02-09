@@ -48,39 +48,7 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
 
-    // 🚨 if refresh itself failed → logout
-    if (
-      error.response?.status === 401 &&
-      originalRequest.url === "/auth/refresh"
-    ) {
-      return Promise.reject(error);
-    }
-
-    // normal access-token refresh flow
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const res = await api.post("/auth/refresh");
-        setAccessToken(res.data.token);
-
-        originalRequest.headers.Authorization =
-          `Bearer ${res.data.token}`;
-
-        return api(originalRequest);
-      } catch (err) {
-        return Promise.reject(err);
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
 
 
 api.interceptors.response.use(
@@ -88,11 +56,25 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
+    // 🚨 if refresh itself failed → logout
+    if (
+      error.response?.status === 401 &&
+      originalRequest.url === "/auth/refresh"
+    ) {
+        console.log("inside first ")
+      return Promise.reject(error);
+    }
+
+    
     if (error.response?.status !== 401) {
+                console.log("inside second ")
+
       return Promise.reject(error);
     }
 
     if (originalRequest._retry) {
+                        console.log("inside third ")
+
       return Promise.reject(error);
     }
 
@@ -121,6 +103,7 @@ api.interceptors.response.use(
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return api(originalRequest);
     } catch (err) {
+        console.log("inside catch")
       processQueue(err, null);
       clearAccessToken();
       return Promise.reject(err);

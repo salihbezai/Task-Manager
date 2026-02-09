@@ -180,19 +180,19 @@ export const login = async (req: Request, res: Response) => {
 export const refresh = async (req: Request, res: Response) => {
   try {
     const oldToken = req.cookies.refreshToken;
-    
+  
     if (!oldToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     let payload: JWTPayload | null = null;
 
     payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
-
     if (!payload) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    // find user but exclude password
 
-    const user = await User.findById(payload.id);
+    const user = await User.findById(payload.id, "-password");
 
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -201,8 +201,6 @@ export const refresh = async (req: Request, res: Response) => {
     const tokenExists = user.refreshTokens.some((t) => t.token === oldToken);
     // reuse detection
     if (!tokenExists) {
-      user.refreshTokens = [];
-      await user.save();
       return res.status(403).json({ message: "Unauthorized" });
     }
     // rotate token
@@ -211,7 +209,7 @@ export const refresh = async (req: Request, res: Response) => {
     const accessToken = generateAccessToken(user._id.toString(), user.role);
 
     user.refreshTokens.push({ token: newRefreshToken, createdAt: new Date() });
-    
+
     await User.updateOne(
       { _id: payload.id },
       { $set: { refreshTokens: user.refreshTokens } },
@@ -221,8 +219,10 @@ export const refresh = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
-
-    res.status(200).json({ user, token: accessToken });
+    res.status(200).json({
+      user: { id: user._id.toString(), name: user.name, email: user.email },
+      token: accessToken,
+    });
   } catch (error) {
     logger.error({
       message: "Error during refresh",
@@ -230,7 +230,6 @@ export const refresh = async (req: Request, res: Response) => {
       stack: (error as Error).stack,
       route: req.originalUrl,
     });
-    console.log("the error is here " + error);
     res.status(500).json({ message: "Server error during refresh." });
   }
 };
@@ -309,9 +308,9 @@ export const logout = async (req: Request, res: Response) => {
         (refreshToken) => refreshToken.token !== token,
       );
       await user.save();
-
-      res.clearCookie("refreshToken");
-      res.status(200).json({ message: "Logout successful." });
     }
+    console.log("logging out ...")
+    res.clearCookie("refreshToken");
+    res.status(200).json({ message: "Logout successful." });
   }
 };
