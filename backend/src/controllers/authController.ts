@@ -84,7 +84,11 @@ export const register = async (req: Request, res: Response) => {
       newUser.role,
     );
     const token = generateRefreshToken(newUser._id.toString());
-    newUser.refreshTokens.push({ token, createdAt: new Date() });
+    newUser.refreshTokens.push({
+      token,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
     await newUser.save();
 
     // respond with user data and token
@@ -149,7 +153,11 @@ export const login = async (req: Request, res: Response) => {
     const refreshToken = generateRefreshToken(user._id.toString());
 
     // save refresh token to db
-    user.refreshTokens.push({ token: refreshToken, createdAt: new Date() });
+    user.refreshTokens.push({
+      token: refreshToken,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
     await user.save();
 
     // respond with user data and token
@@ -176,51 +184,85 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-// refresth rotation
+
+
 export const refresh = async (req: Request, res: Response) => {
   try {
+    const GRACE_MS = 30 * 1000; // 30 seconds grace
+    const REFRESH_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
     const oldToken = req.cookies.refreshToken;
-  
     if (!oldToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    let payload: JWTPayload | null = null;
-    
-    payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
-    if (!payload) {
+
+    //  Verify JWT signature
+    let payload: JWTPayload;
+    try {
+      payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
+    } catch {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    // find user but exclude password
 
-    const user = await User.findById(payload.id, "-password");
+    //  Find user containing this refresh token
+    const user = await User.findOne(
+      { refreshTokens: { $elemMatch: { token: oldToken } } },
+      { password: 0 },
+    );
 
     if (!user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const tokenExists = user.refreshTokens.some((t) => t.token === oldToken);
-    // reuse detection
-    if (!tokenExists) {
       return res.status(403).json({ message: "Unauthorized" });
     }
-    // rotate token
-    user.refreshTokens = user.refreshTokens.filter((t) => t.token !== oldToken);
+    //  Validate token & grace period
+    const now = new Date();
+    const storedToken = user.refreshTokens.find(
+      (t) => t.token === oldToken && t.expiresAt > now,
+    );
+
+    if (!storedToken) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    //  Rotate token
     const newRefreshToken = generateRefreshToken(user._id.toString());
     const accessToken = generateAccessToken(user._id.toString(), user.role);
 
-    user.refreshTokens.push({ token: newRefreshToken, createdAt: new Date() });
-
-    await User.updateOne(
-      { _id: payload.id },
-      { $set: { refreshTokens: user.refreshTokens } },
+    //  Mark old token to expire soon (GRACE)
+    user.refreshTokens = user.refreshTokens.map((t) =>
+      t.token === oldToken
+        ? { ...t, expiresAt: new Date(Date.now() + GRACE_MS) }
+        : t,
     );
 
+    //  Add new refresh token
+    user.refreshTokens.push({
+      token: newRefreshToken,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + REFRESH_LIFETIME_MS),
+    });
+
+    //  Cleanup expired tokens
+    user.refreshTokens = user.refreshTokens.filter(
+      (t) => t.expiresAt > new Date(),
+    );
+
+    await user.save();
+
+    //  Set cookie
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
     });
+
+    //  Respond
     res.status(200).json({
-      user: { id: user._id.toString(), name: user.name, email: user.email },
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       token: accessToken,
     });
   } catch (error) {
@@ -309,7 +351,7 @@ export const logout = async (req: Request, res: Response) => {
       );
       await user.save();
     }
-    console.log("logging out ...")
+    console.log("logging out ...");
     res.clearCookie("refreshToken");
     res.status(200).json({ message: "Logout successful." });
   }

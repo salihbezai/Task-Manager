@@ -34,6 +34,7 @@ api.interceptors.request.use(
 ========================= */
 
 let isRefreshing = false;
+let refreshPromise: Promise<any> | null = null;
 let failedQueue: {
   resolve: (token: string) => void;
   reject: (err: any) => void;
@@ -79,6 +80,7 @@ api.interceptors.response.use(
     }
 
     if (isRefreshing) {
+        console.log("if it is refreshing don't do it")
       return new Promise((resolve, reject) => {
         failedQueue.push({
           resolve: (token: string) => {
@@ -99,11 +101,11 @@ api.interceptors.response.use(
 
       setAccessToken(newToken);
       processQueue(null, newToken);
-
+        console.log("refreshed ")
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return api(originalRequest);
     } catch (err) {
-        console.log("inside catch")
+        console.log("inside catch "+error)
       processQueue(err, null);
       clearAccessToken();
       return Promise.reject(err);

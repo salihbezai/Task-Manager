@@ -10,7 +10,6 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const protect = (req: Request, res: Response, next: NextFunction) => {
 const authHeader = req.headers.authorization;
-console.log("the auth header object "+JSON.stringify(authHeader))
 
 if (!authHeader || !authHeader.startsWith("Bearer ")) {
   return res.status(401).json({ message: "No token, authorization denied" })
@@ -23,7 +22,6 @@ try {
   req.user = decoded;
   next();
 } catch (error) {
-  console.log("here in catch")
   logger.error({
     message: "Error verifying token",
     error: (error as Error).message,

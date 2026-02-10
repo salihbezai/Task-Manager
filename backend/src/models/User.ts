@@ -6,7 +6,7 @@ export interface IUser {
   password: string;
   profileImageUrl?: string;
   role: "member" | "admin";
-  refreshTokens: { token: string; createdAt: Date }[];
+  refreshTokens: { token: string; createdAt: Date, expiresAt: Date }[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -22,6 +22,7 @@ const userSchema = new Schema<IUser>(
       {
         token: String,
         createdAt: { type: Date, default: Date.now },
+        expiresAt: { type: Date }
       },
     ],
   },
