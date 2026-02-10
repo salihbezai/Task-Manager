@@ -185,7 +185,7 @@ export const refresh = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     let payload: JWTPayload | null = null;
-
+    
     payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
     if (!payload) {
       return res.status(401).json({ message: "Unauthorized" });

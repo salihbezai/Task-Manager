@@ -17,11 +17,9 @@ const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
     );
   }
 
-
-
-  if (!user && !loading ) {
-    return <Navigate to="/login" />;
-  }
+  // if (!user && !loading ) {
+  //   return <Navigate to="/login" />;
+  // }
 
   return <Outlet />;
 };
