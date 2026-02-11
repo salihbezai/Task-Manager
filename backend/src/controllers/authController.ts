@@ -220,6 +220,9 @@ export const refresh = async (req: Request, res: Response) => {
     );
 
     if (!storedToken) {
+      //  Token has expired or reused
+      user.refreshTokens = [];
+      await user.save();
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -245,7 +248,7 @@ export const refresh = async (req: Request, res: Response) => {
     user.refreshTokens = user.refreshTokens.filter(
       (t) => t.expiresAt > new Date(),
     );
-
+   
     await user.save();
 
     //  Set cookie
