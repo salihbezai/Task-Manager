@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import PrivateRoute from "./routes/PrivateRoute";
@@ -22,25 +27,19 @@ import UserLayout from "./components/layout/UserLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UpdateTask from "./pages/Admin/UpdateTask";
-
+import Profile from "./pages/User/Profile";
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
 
-
-
   useEffect(() => {
+    const initAuth = async () => {
+      await dispatch(fetchCurrentUser()).unwrap();
+    };
 
-  const initAuth = async () => {
-       await dispatch(fetchCurrentUser()).unwrap();
-  };
-
-  initAuth();
-}, [dispatch]);
-
-
-
+    initAuth();
+  }, [dispatch]);
 
   return (
     <div>
@@ -50,8 +49,13 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route
             path="/"
-            element={user?.role === "admin" ? <Navigate to="/admin/dashboard" /> 
-              : <Navigate to="/user/dashboard" />}
+            element={
+              user?.role === "admin" ? (
+                <Navigate to="/admin/dashboard" />
+              ) : (
+                <Navigate to="/user/dashboard" />
+              )
+            }
           />
           {/* Admin Routes */}
 
@@ -62,6 +66,7 @@ const App = () => {
               <Route path="create-task" element={<CreateTask />} />
               <Route path="update-task/:id" element={<UpdateTask />} />
               <Route path="users" element={<ManageUsers />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
 
@@ -71,6 +76,7 @@ const App = () => {
               <Route path="dashboard" element={<UserDashboard />} />
               <Route path="my-tasks" element={<MyTasks />} />
               <Route path="task-details/:id" element={<ViewTaskDetails />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
         </Routes>

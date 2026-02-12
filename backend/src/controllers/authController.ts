@@ -105,10 +105,11 @@ export const register = async (req: Request, res: Response) => {
     });
     res.status(201).json({ user, token: accessToken });
   } catch (error) {
+    const err = error as Error;
     logger.error({
       message: "Error during registration",
-      error: (error as Error).message,
-      stack: (error as Error).stack,
+      error: (err).message,
+      stack: (err).stack,
       route: req.originalUrl,
     });
     res.status(500).json({ message: "Server error during registration." });

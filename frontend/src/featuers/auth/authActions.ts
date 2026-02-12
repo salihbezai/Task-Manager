@@ -90,6 +90,25 @@ const refreshToken = createAsyncThunk<loginResponse, void, { rejectValue: string
     }
   },
 )
+// upload image profile
+const uploadImage = createAsyncThunk<string, File, { rejectValue: string }>(
+  "user/uploadImage",
+  async (file, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const { data } = await api.post("/users/upload-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return data.imageUrl;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+)
+
 // logout user
 const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   "auth/logoutUser",
@@ -104,4 +123,4 @@ const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   },
 );
 
-export { fetchCurrentUser, loginUser, registerUser, refreshToken, logoutUser };
+export { fetchCurrentUser, loginUser, registerUser, refreshToken, logoutUser,uploadImage };

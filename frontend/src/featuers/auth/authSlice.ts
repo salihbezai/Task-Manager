@@ -5,6 +5,7 @@ import {
   logoutUser,
   refreshToken,
   registerUser,
+  uploadImage,
 } from "./authActions";
 import type { userType } from "./userTypes";
 
@@ -103,6 +104,24 @@ const authSlice = createSlice({
       state.loading = false;
       state.initialized = true;
       state.user = null;
+    });
+    // upload image
+    builder.addCase(uploadImage.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(uploadImage.fulfilled, (state, action) => {
+      state.loading = false;
+      if (state.user) {
+        console.log("changed here as well")
+        state.user.profileImageUrl = action.payload;
+        console.log("state user.profileimage "+state.user.profileImageUrl)
+      }
+      state.error = null;
+    });
+    builder.addCase(uploadImage.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload ?? null;
     });
 
     // logout user

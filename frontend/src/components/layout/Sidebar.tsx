@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { logoutUser } from "../../featuers/auth/authActions";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 const Sidebar = ({
   isOpen,
@@ -22,7 +23,7 @@ const Sidebar = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.auth);
-
+  
   const adminMenu = [
     {
       label: "Dashboard",
@@ -40,6 +41,12 @@ const Sidebar = ({
       path: "/admin/users",
       icon: <MdGroup size={20} />,
     },
+    // Profile
+    {
+      label: "Profile",
+      path: "/admin/profile",
+      icon: <MdGroup size={20} />,
+    },
   ];
 
   const userMenu = [
@@ -49,6 +56,12 @@ const Sidebar = ({
       icon: <MdDashboard size={20} />,
     },
     { label: "My Tasks", path: "/user/my-tasks", icon: <MdTask size={20} /> },
+    // Profile
+    {
+      label: "Profile",
+      path: "/user/profile",
+      icon: <MdGroup size={20} />,
+    },
   ];
 
   const menu = user?.role === "admin" ? adminMenu : userMenu;
@@ -62,6 +75,10 @@ const Sidebar = ({
       toast.error("Error logging out. Please try again.");
     }
   };
+
+  useEffect(() => {
+    console.log("the user chagned")
+  },[user])
 
   return (
     <>
@@ -80,7 +97,7 @@ const Sidebar = ({
           {/* USER SECTION */}
           <div className="flex flex-col items-center">
             <img
-              src={`http://localhost:5000/uploads/${user?.profileImageUrl}`}
+              src={`${user?.profileImageUrl}`}
               className="w-18 h-18 rounded-full"
             />
 

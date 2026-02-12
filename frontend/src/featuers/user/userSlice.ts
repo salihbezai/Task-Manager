@@ -31,6 +31,8 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload ?? null;
     });
+
+   
     // download users CSV
     builder.addCase(downloadUsersCSV.pending, (state) => {
       state.loading = true;
