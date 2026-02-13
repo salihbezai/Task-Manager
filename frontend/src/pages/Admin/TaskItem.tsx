@@ -109,7 +109,7 @@ const TaskItem = ({ task }: { task: Task }) => {
               {visibleUsers.map((user, index) => (
                 <img
                   key={user._id}
-                  src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+                  src={`${user.profileImageUrl}`}
                   title={user.name}
                   alt={user.name}
                   className={`
@@ -119,7 +119,7 @@ const TaskItem = ({ task }: { task: Task }) => {
                 />
               ))}
 
-              {extraCount > 0 && (
+              {extraCount > 1 && (
                 <div
                   className="
         w-10 h-10 rounded-full bg-gray-300 text-gray-700

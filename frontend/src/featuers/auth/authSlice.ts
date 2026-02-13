@@ -5,6 +5,7 @@ import {
   logoutUser,
   refreshToken,
   registerUser,
+  updateUserProfile,
   uploadImage,
 } from "./authActions";
 import type { userType } from "./userTypes";
@@ -17,6 +18,8 @@ interface AuthState {
   loginLoading: boolean;
   registerError: null | string;
   registerLoading: boolean;
+  loadingUploadImage: boolean;
+  loadingUpdateUserProfile: boolean;
   initialized: boolean;
 }
 
@@ -28,6 +31,8 @@ const initialState: AuthState = {
   loginLoading: false,
   registerError: null,
   registerLoading: false,
+  loadingUploadImage: false,
+  loadingUpdateUserProfile: false,
   initialized: false,
 };
 
@@ -107,11 +112,11 @@ const authSlice = createSlice({
     });
     // upload image
     builder.addCase(uploadImage.pending, (state) => {
-      state.loading = true;
+      state.loadingUploadImage = true;
       state.error = null;
     });
     builder.addCase(uploadImage.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loadingUploadImage = false;
       if (state.user) {
         console.log("changed here as well")
         state.user.profileImageUrl = action.payload;
@@ -120,7 +125,22 @@ const authSlice = createSlice({
       state.error = null;
     });
     builder.addCase(uploadImage.rejected, (state, action) => {
-      state.loading = false;
+      state.loadingUploadImage = false;
+      state.error = action.payload ?? null;
+    });
+
+    // update user profile
+    builder.addCase(updateUserProfile.pending, (state) => {
+      state.loadingUpdateUserProfile = true;
+      state.error = null;
+    });
+    builder.addCase(updateUserProfile.fulfilled, (state, action) => {
+      state.loadingUpdateUserProfile = false;
+      state.user = action.payload;
+      state.error = null;
+    });
+    builder.addCase(updateUserProfile.rejected, (state, action) => {
+      state.loadingUpdateUserProfile = false;
       state.error = action.payload ?? null;
     });
 

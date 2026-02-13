@@ -1,13 +1,17 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadImage } from "../../featuers/auth/authActions";
+import {
+  updateUserProfile,
+  uploadImage,
+} from "../../featuers/auth/authActions";
 import type { AppDispatch, RootState } from "../../store/store";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
-
+  const { user, loadingUpdateUserProfile } = useSelector((state: RootState) => state.auth);
+  const [name, setName] = useState(user?.name || "");
   const handleButtonClick = () => {
     fileInputRef.current?.click();
   };
@@ -17,9 +21,28 @@ const Profile = () => {
 
     try {
       await dispatch(uploadImage(file)).unwrap();
-     
     } catch (error) {
       console.error("Upload failed:", error);
+    }
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user) return;
+
+    try {
+      await dispatch(
+        updateUserProfile({
+            ...user,
+          id: user.id, 
+          name,
+        }),
+      ).unwrap();
+
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Failed to update profile.");
     }
   };
   return (
@@ -31,7 +54,7 @@ const Profile = () => {
         <div className="flex flex-col items-center">
           <img
             src={user?.profileImageUrl}
-            className="w-30 h-30 rounded-full"
+            className="w-30 h-30 mb-1 rounded-full"
             alt="user-avatar"
           />
           {/* hidden input for file upload */}
@@ -52,13 +75,14 @@ const Profile = () => {
         </div>
       </div>
 
-      <form>
+      <form className="max-w-2xl mx-auto" onSubmit={handleUpdateUser}>
         <div className="mb-4">
           <label className="block font-medium mb-1">Full Name</label>{" "}
           <input
             type="text"
-            value={"the name of the user"}
-            className={`w-full p-2 border rounded focus:outline-none `}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full max-w-2xl p-2 border  rounded focus:outline-none bg-gray-100"
             placeholder="Enter your name"
           />
         </div>
@@ -66,8 +90,9 @@ const Profile = () => {
           <label className="block font-medium mb-1">Email</label>{" "}
           <input
             type="email"
-            value={"the email of the user"}
-            className={`w-full p-2 border rounded focus:outline-none `}
+            value={user?.email}
+            readOnly
+            className="w-full max-w-2xl p-2 border text-gray-500 rounded focus:outline-none bg-gray-100"
             placeholder="Enter your email"
           />
         </div>
@@ -75,19 +100,22 @@ const Profile = () => {
           <label className="block font-medium mb-1">Role</label>{" "}
           <input
             type="email"
-            value={"the email of the user"}
-            className={`w-full p-2 border rounded focus:outline-none `}
+            value={user?.role}
+            readOnly
+            className="w-full max-w-2xl p-2 border text-gray-500 rounded focus:outline-none bg-gray-100"
             placeholder="Enter your email"
           />
         </div>
 
         {/* Submit */}
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
-        >
-          {"Save changes"}
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
+          >
+            {loadingUpdateUserProfile ? "Saving..." : "Save changes"}
+          </button>
+        </div>
       </form>
     </div>
   );

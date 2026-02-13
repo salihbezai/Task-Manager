@@ -76,9 +76,7 @@ const Sidebar = ({
     }
   };
 
-  useEffect(() => {
-    console.log("the user chagned")
-  },[user])
+
 
   return (
     <>

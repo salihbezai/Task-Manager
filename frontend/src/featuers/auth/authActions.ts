@@ -109,6 +109,20 @@ const uploadImage = createAsyncThunk<string, File, { rejectValue: string }>(
   },
 )
 
+// update user profile
+const updateUserProfile = createAsyncThunk<
+  userType,
+ userType,
+  { rejectValue: string }
+>("user/updateUserProfile", async (user, { rejectWithValue }) => {
+  try {
+    const { data } = await api.put("/auth/profile", user);
+    return data.user;
+  } catch (error: unknown) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+})
+
 // logout user
 const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   "auth/logoutUser",
@@ -123,4 +137,4 @@ const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   },
 );
 
-export { fetchCurrentUser, loginUser, registerUser, refreshToken, logoutUser,uploadImage };
+export { fetchCurrentUser, loginUser, registerUser, refreshToken, logoutUser,uploadImage,updateUserProfile };

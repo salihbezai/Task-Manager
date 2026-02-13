@@ -301,7 +301,7 @@ if (!selectedTask) {
                 {visibleUsers?.map((user, index) => (
                   <img
                     key={user._id}
-                    src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+                    src={`${user.profileImageUrl}`}
                     title={user.name}
                     onClick={() => setShowAssignModal(true)}
                     className={`w-12 h-12 rounded-full border-2 border-white cursor-pointer ${

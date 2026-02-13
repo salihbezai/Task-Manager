@@ -18,6 +18,7 @@ interface RegisterRequestBody {
   inviteToken?: string;
 }
 export interface UpdateRequestBody {
+  id?: string;
   name?: string;
   email?: string;
   password?: string;
@@ -313,7 +314,10 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     const updateData = req.body as Partial<UpdateRequestBody>;
-
+    // check if the loggedin user is trying to update their own profile
+    if (updateData.id && updateData.id !== userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const user = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
     });
@@ -326,6 +330,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         profileImageUrl: user.profileImageUrl,
+        role: user.role,
       },
     });
   } catch (error) {

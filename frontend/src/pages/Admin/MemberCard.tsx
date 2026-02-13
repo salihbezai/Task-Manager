@@ -6,7 +6,7 @@ const MemberCard = ({ user }: { user: User }) => {
       <div className="bg-white p-4 rounded-lg shadow-md">
         <div className="flex items-center mb-4">
           <img
-            src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+            src={`${user.profileImageUrl}`}
             alt="Avatar"
             className="w-10 h-10 rounded-full mr-4"
           />
