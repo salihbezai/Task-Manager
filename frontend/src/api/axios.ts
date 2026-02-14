@@ -1,13 +1,14 @@
-import axios from "axios"
-import { clearAccessToken, getAccessToken, setAccessToken } from "./tokenService";
+import axios from "axios";
+import {
+  clearAccessToken,
+  getAccessToken,
+  setAccessToken,
+} from "./tokenService";
 
-
-const api = axios.create( {
-    baseURL: 'http://localhost:5000/api',
-    withCredentials: true,
-})
-
-
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+  withCredentials: true,
+});
 
 /* =========================
    REQUEST INTERCEPTOR
@@ -18,16 +19,14 @@ api.interceptors.request.use(
 
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
-    }else if(config.headers?.Authorization){
-      delete config.headers.Authorization
+    } else if (config.headers?.Authorization) {
+      delete config.headers.Authorization;
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
-
-
 
 /* =========================
    RESPONSE INTERCEPTOR
@@ -49,12 +48,9 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-
-
-
 api.interceptors.response.use(
-  res => res,
-  async error => {
+  (res) => res,
+  async (error) => {
     const originalRequest = error.config;
 
     // 🚨 if refresh itself failed → logout
@@ -62,25 +58,20 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       originalRequest.url === "/auth/refresh"
     ) {
-        console.log("inside first ")
       return Promise.reject(error);
     }
 
-    
     if (error.response?.status !== 401) {
-                console.log("inside second ")
 
       return Promise.reject(error);
     }
 
     if (originalRequest._retry) {
-                        console.log("inside third ")
-
       return Promise.reject(error);
     }
 
     if (isRefreshing) {
-        console.log("if it is refreshing don't do it")
+      console.log("if it is refreshing don't do it");
       return new Promise((resolve, reject) => {
         failedQueue.push({
           resolve: (token: string) => {
@@ -101,19 +92,16 @@ api.interceptors.response.use(
 
       setAccessToken(newToken);
       processQueue(null, newToken);
-        console.log("refreshed ")
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return api(originalRequest);
     } catch (err) {
-        console.log("inside catch "+error)
       processQueue(err, null);
       clearAccessToken();
       return Promise.reject(err);
     } finally {
       isRefreshing = false;
     }
-  }
+  },
 );
-
 
 export default api;
