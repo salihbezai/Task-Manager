@@ -11,11 +11,11 @@ This project follows clean architecture principles, normalized state management,
 ## ✨ Features
 
 ### 🔐 Authentication
-– Users can register and login to the application.  
-– Access tokens are short-lived JSON Web Tokens (JWT) used to protect backend routes.  
-– Refresh tokens are used to issue new access tokens without requiring the user to log in again. Each refresh token is rotated after use, and the old token expires after a    short grace period to prevent replay attacks.  
-– Certain backend API routes require a valid access token to access.  
-– Frontend routes are protected based on authentication and user roles (e.g., admin vs. user).  
+- Users can register and login to the application.  
+- Access tokens are short-lived JSON Web Tokens (JWT) used to protect backend routes.  
+- Refresh tokens are used to issue new access tokens without requiring the user to log in again. Each refresh token is rotated after use, and the old token expires after a    short grace period to prevent replay attacks.  
+- Certain backend API routes require a valid access token to access.  
+- Frontend routes are protected based on authentication and user roles (e.g., admin vs. user).  
 
 ### 📋 Task Management
 - Create, read, update, delete tasks
