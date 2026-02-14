@@ -42,4 +42,21 @@ router.post("/upload-image", protect, upload.single("image"),async (req, res) =>
   }
 });
 
+// update user profile
+router.put("/profile", protect, async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const updateData = req.body;
+    const user = await User.findByIdAndUpdate(userId, updateData, { new: true })
+    res.status(200).json({ user });
+  } catch (error) {
+    logger.error({
+      message: "Error updating user profile",
+      error: (error as Error).message,
+      stack: (error as Error).stack,
+      route: req.originalUrl,
+    });
+  }
+});
+
 export default router;
