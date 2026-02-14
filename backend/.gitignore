@@ -29,5 +29,8 @@ test.env
 .DS_Store
 Thumbs.db
 
+# ignore uploads folder
+uploads/
+
 # Optional: coverage reports if using Jest
 coverage/
