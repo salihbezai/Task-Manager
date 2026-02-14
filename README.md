@@ -150,6 +150,7 @@ The project includes automated backend tests to ensure the application works as 
 #### Running Tests
 ```bash
 npm run test
+```
 
 ## 📬 Contact
 
