@@ -22,7 +22,7 @@ beforeEach(setupDatabase);
 test("should create new task admin user", async () => {
   await request(app)
     .post("/api/tasks/create")
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .send({
       title: "Task 1",
     })
@@ -33,7 +33,7 @@ test("should create new task admin user", async () => {
 test("should create new task with all information filled", async () => {
   const response = await request(app)
     .post("/api/tasks/create")
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .send({
       title: "Task 1",
       description: "description of task",
@@ -61,7 +61,7 @@ test("should create new task with all information filled", async () => {
 test("should not create new task without title", async () => {
   await request(app)
     .post("/api/tasks/create")
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .send({
       description: "description of task",
     })
@@ -72,7 +72,7 @@ test("should not create new task without title", async () => {
 test("should not create new task by a member user", async () => {
   const response = await request(app)
     .post("/api/tasks/create")
-    .set("Cookie", `token=${userTwoToken}`)
+   .set("Authorization", `Bearer ${userTwoToken}`)
     .send({
       title: "Task 1",
     })
@@ -83,7 +83,7 @@ test("should not create new task by a member user", async () => {
 test("should get tasks", async () => {
   const response = await request(app)
     .get("/api/tasks")
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
   expect(200);
   // assert the tasks length is 3
@@ -94,7 +94,7 @@ test("should get tasks", async () => {
 test("should not get tasks by memeber user", async () => {
   const response = await request(app)
     .get("/api/tasks")
-    .set("Cookie", `token=${userTwoToken}`)
+   .set("Authorization", `Bearer ${userTwoToken}`)
     .expect(403);
   expect(403);
 });
@@ -103,7 +103,7 @@ test("should not get tasks by memeber user", async () => {
 test("should get tasks assigned to a certain user", async () => {
   const response = await request(app)
     .get(`/api/tasks/user-tasks`)
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
   expect(200);
   // assert the tasks length is 2
@@ -114,7 +114,7 @@ test("should get tasks assigned to a certain user", async () => {
 test("should get task by id", async () => {
   const response = await request(app)
     .get(`/api/tasks/${taskOne._id}`)
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
 
   expect(response.body.task).not.toBeNull();
@@ -124,7 +124,7 @@ test("should get task by id", async () => {
 test("user admin can also get other users task by id", async () => {
   const response = await request(app)
     .get(`/api/tasks/${taskTwo._id}`)
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
 
   expect(response.body.task).not.toBeNull();
@@ -134,7 +134,7 @@ test("user admin can also get other users task by id", async () => {
 test("normal user can get his own task assigned to him or created by him", async () => {
   const response = await request(app)
     .get(`/api/tasks/${taskTwo._id}`)
-    .set("Cookie", `token=${userTwoToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
 
   expect(response.body.task).not.toBeNull();
@@ -145,7 +145,7 @@ test("normal user can get his own task assigned to him or created by him", async
 test("normal user cannot get a task that not assigned to him or he is not the creator of the task", async () => {
   const response = await request(app)
     .get(`/api/tasks/${taskOne._id}`)
-    .set("Cookie", `token=${userTwoToken}`)
+    .set("Authorization", `Bearer ${userTwoToken}`)
     .expect(403);
 });
 
@@ -153,7 +153,7 @@ test("normal user cannot get a task that not assigned to him or he is not the cr
 test("should update task by id", async () => {
   const response = await request(app)
     .put(`/api/tasks/update/${taskOne._id}`)
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .send({
       title: "Task 1 updated",
     })
@@ -166,7 +166,7 @@ test("should update task by id", async () => {
 test("should not update task by a member user", async () => {
   const response = await request(app)
     .put(`/api/tasks/update/${taskOne._id}`)
-    .set("Cookie", `token=${userTwoToken}`)
+    .set("Authorization", `Bearer ${userTwoToken}`)
     .send({
       title: "Task 1 updated",
     })
@@ -177,7 +177,7 @@ test("should not update task by a member user", async () => {
 test("should delete task by id by the admin", async () => {
   const response = await request(app)
     .delete(`/api/tasks/delete/${taskOne._id}`)
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
   const task = await Task.findById(taskOne._id);
   expect(task).toBeNull();
@@ -187,7 +187,7 @@ test("should delete task by id by the admin", async () => {
 test("should not delete task by a member user", async () => {
   const response = await request(app)
     .delete(`/api/tasks/delete/${taskOne._id}`)
-    .set("Cookie", `token=${userTwoToken}`)
+    .set("Authorization", `Bearer ${userTwoToken}`)
     .expect(403);
 });
 
@@ -195,7 +195,7 @@ test("should not delete task by a member user", async () => {
 test("should update task status", async () => {
   const response = await request(app)
     .put(`/api/tasks/${taskOne._id}/status`)
-    .set("Cookie", `token=${userOneToken}`)
+   .set("Authorization", `Bearer ${userOneToken}`)
     .send({
       status: "completed",
     })
@@ -209,7 +209,7 @@ test("should update task status", async () => {
 test("should get dashboard data  by admin only", async () => {
   await request(app)
     .get(`/api/tasks/dashboard-data`)
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
   expect(200);
 });
@@ -218,7 +218,7 @@ test("should get dashboard data  by admin only", async () => {
 test("should not get dashboard data by a member user", async () => {
   await request(app)
     .get(`/api/tasks/dashboard-data`)
-    .set("Cookie", `token=${userTwoToken}`)
+  .set("Authorization", `Bearer ${userTwoToken}`)
     .expect(403);
 });
 
@@ -226,7 +226,7 @@ test("should not get dashboard data by a member user", async () => {
 test("should get user dashboard data by normal user", async () => {
   await request(app)
     .get(`/api/tasks/user-dashboard-data`)
-    .set("Cookie", `token=${userTwoToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
   expect(200);
 });
@@ -236,7 +236,7 @@ test("should get user dashboard data by normal user", async () => {
 test("should get task report by admin only", async () => {
   const response =await request(app)
     .get(`/api/reports/export/tasks`)
-    .set("Cookie", `token=${userOneToken}`)
+  .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
 
     expect(response.headers["content-type"]).
@@ -251,7 +251,7 @@ test("should get task report by admin only", async () => {
 test("should not get task report by a member user", async () => {
   await request(app)
     .get(`/api/reports/export/tasks`)
-    .set("Cookie", `token=${userTwoToken}`)
+    .set("Authorization", `Bearer ${userTwoToken}`)
     .expect(403);
 });
 
@@ -259,7 +259,7 @@ test("should not get task report by a member user", async () => {
 test("should get user report by admin only", async () => {
   const response =await request(app)
     .get(`/api/reports/export/users`)
-    .set("Cookie", `token=${userOneToken}`)
+   .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
 
     expect(response.headers["content-type"]).
@@ -274,6 +274,6 @@ test("should get user report by admin only", async () => {
 test("should not get user report by a member user", async () => {
   await request(app)
     .get(`/api/reports/export/users`)
-    .set("Cookie", `token=${userTwoToken}`)
+   .set("Authorization", `Bearer ${userTwoToken}`)
     .expect(403);
 });

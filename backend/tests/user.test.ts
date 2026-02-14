@@ -14,7 +14,7 @@ beforeEach(setupDatabase);
 test("should get users", async () => {
   const response = await request(app)
     .get("/api/users")
-    .set("Cookie", `token=${userOneToken}`)
+   .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
   expect(200);
 });
@@ -23,7 +23,7 @@ test("should get users", async () => {
 test("should get user by id", async () => {
   const response = await request(app)
     .get(`/api/users/${userOneId}`)
-    .set("Cookie", `token=${userOneToken}`)
+ .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
 
   expect(response.body.user).not.toBeNull();
@@ -34,7 +34,7 @@ test("should get user by id", async () => {
 test("should delete user by id (admin only)", async () => {
   const response = await request(app)
     .delete(`/api/users/delete/${userOneId}`)
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
     // assert that the user was deleted
     const user = await User.findById(userOneId);
@@ -45,7 +45,7 @@ test("should delete user by id (admin only)", async () => {
 test("should upload image profile", async () => {
   const response = await request(app)
     .post("/api/users/upload-image")
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .attach("image", "tests/fixtures/Mike.jpg")
     .expect(200);
 

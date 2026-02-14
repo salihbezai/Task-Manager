@@ -12,6 +12,7 @@ const Profile = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user, loadingUpdateUserProfile } = useSelector((state: RootState) => state.auth);
   const [name, setName] = useState(user?.name || "");
+
   const handleButtonClick = () => {
     fileInputRef.current?.click();
   };
@@ -34,7 +35,6 @@ const Profile = () => {
       await dispatch(
         updateUserProfile({
             ...user,
-          id: user.id, 
           name,
         }),
       ).unwrap();

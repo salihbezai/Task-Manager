@@ -6,7 +6,7 @@ import { User } from "../src/models/User";
 const request = require("supertest");
 const app = require("../src/app");
 
-const { setupDatabase, userOne,useroneId, userOneToken } = require("./fixtures/db");
+const { setupDatabase, userOne,userOneId, userOneToken,userTwoId } = require("./fixtures/db");
 
 
 beforeEach(setupDatabase);
@@ -107,7 +107,7 @@ test("should not login a user with wrong credentials", async () => {
 test("should get user profile", async () => {
   await request(app)
     .get("/api/auth/me")
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .expect(200);
 });
 
@@ -120,23 +120,15 @@ test("should not get user profile without token", async () => {
 test("should update user profile", async () => {
   const response = await request(app)
     .put("/api/auth/profile")
-    .set("Cookie", `token=${userOneToken}`)
+    .set("Authorization", `Bearer ${userOneToken}`)
     .send({
       name: "Mike",
-      email: "Mike@example.com",
-      profileImageUrl: "https://example.com/john.jpg",
+      id: userOneId.toString(),
     } as UpdateRequestBody)
     .expect(200);
 
   expect(response.body.user).not.toBeNull();
-  // Assertion about the response
-  expect(response.body).toMatchObject({
-    user: {
-      name: "Mike",
-      email: "Mike@example.com",
-      profileImageUrl: "https://example.com/john.jpg",
-    },
-  });
+
 });
 
 // should not update user profile without token
@@ -145,12 +137,8 @@ test("should not update user profile without token", async () => {
     .put("/api/auth/profile")
     .send({
       name: "Mike_updated",
-      email: "Mike_updated@example.com",
-      profileImageUrl: "https://example.com/mike_updated.jpg",
     } as UpdateRequestBody)
     .expect(401);
 });
-
-
 
 

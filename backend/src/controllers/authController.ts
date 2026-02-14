@@ -314,13 +314,11 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     const updateData = req.body as Partial<UpdateRequestBody>;
-    // check if the loggedin user is trying to update their own profile
-    if (updateData.id && updateData.id !== userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+
     const user = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
     });
+    console.log("the udpate data "+JSON.stringify(updateData))
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
