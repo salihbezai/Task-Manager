@@ -133,6 +133,24 @@ npm install
 npm run dev
 ```
 
+
+### 🧪 Tests
+
+The project includes automated backend tests to ensure the application works as expected.  
+
+#### What is tested
+- Controllers, services, and utility functions.  
+- Authentication flows:
+  - User registration and login  
+  - Access token validation  
+  - Refresh token rotation and expiration  
+- Protected routes to verify that only authorized users can access them.  
+- Error handling for invalid requests and unauthorized access.  
+
+#### Running Tests
+```bash
+npm run test
+
 ## 📬 Contact
 
 - GitHub: [salihbezai](https://github.com/salihbezai)
