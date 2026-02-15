@@ -88,7 +88,7 @@ const authSlice = createSlice({
     });
     builder.addCase(registerUser.fulfilled, (state, action) => {
       state.registerLoading = false;
-      state.user = action.payload.user;
+       state.user = action.payload.user;
       state.registerError = null;
     });
     builder.addCase(registerUser.rejected, (state, action) => {
@@ -118,9 +118,7 @@ const authSlice = createSlice({
     builder.addCase(uploadImage.fulfilled, (state, action) => {
       state.loadingUploadImage = false;
       if (state.user) {
-        console.log("changed here as well")
         state.user.profileImageUrl = action.payload;
-        console.log("state user.profileimage "+state.user.profileImageUrl)
       }
       state.error = null;
     });

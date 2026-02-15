@@ -76,7 +76,7 @@ export const register = async (req: Request, res: Response) => {
       name,
       email,
       password: hashedPassword,
-      profileImageUrl: req.body.profileImageUrl || null,
+      profileImageUrl: `/uploads/avatar.png`,
       role: role || "member",
     });
 
@@ -148,6 +148,7 @@ export const login = async (req: Request, res: Response) => {
 
     // compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password." });
     }
@@ -195,7 +196,7 @@ export const refresh = async (req: Request, res: Response) => {
 
     const oldToken = req.cookies.refreshToken;
     if (!oldToken) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "You are not logged in, please log in and try again." });
     }
 
     //  Verify JWT signature
@@ -203,7 +204,7 @@ export const refresh = async (req: Request, res: Response) => {
     try {
       payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
     } catch {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "You are not logged in, please log in and try again." });
     }
 
     //  Find user containing this refresh token
@@ -213,7 +214,7 @@ export const refresh = async (req: Request, res: Response) => {
     );
 
     if (!user) {
-      return res.status(403).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "You are not logged in, please log in and try again." });
     }
     //  Validate token & grace period
     const now = new Date();

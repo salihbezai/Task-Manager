@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { logoutUser } from "../../featuers/auth/authActions";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
 
 const Sidebar = ({
   isOpen,
@@ -95,7 +94,7 @@ const Sidebar = ({
           {/* USER SECTION */}
           <div className="flex flex-col items-center">
             <img
-              src={`${user?.profileImageUrl}`}
+            src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
               className="w-18 h-18 rounded-full"
             />
 

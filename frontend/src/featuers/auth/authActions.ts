@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { getErrorMessage } from "../../utils/errorHelper";
 import type { loginResponse, registerResponse, userType } from "./userTypes";
-import { toast } from "react-toastify";
 import { clearAccessToken, getAccessToken, setAccessToken } from "../../api/tokenService";
 
 
@@ -38,8 +37,7 @@ const loginUser = createAsyncThunk<
       setAccessToken(data.token);
       return data;
     } catch (error: unknown) {
-      toast.error(error.response.data.message || "Something went wrong, please try again.");
-      rejectWithValue(getErrorMessage(error));
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );
@@ -72,8 +70,7 @@ const registerUser = createAsyncThunk<
       setAccessToken(data.token);
       return data;
     } catch (error: unknown) {
-      toast.error(error.response.data.message || "Failed to register user, please try again.");
-      rejectWithValue(getErrorMessage(error));
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );
@@ -132,7 +129,7 @@ const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
       clearAccessToken();
       return;
     } catch (error: unknown) {
-      rejectWithValue(getErrorMessage(error));
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );

@@ -9,26 +9,33 @@ import {
   updateTaskStatus,
 } from "../../featuers/task/taskActions";
 import { BeatLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const ViewTaskDetails = () => {
   const { id } = useParams(); // task id from route
   const dispatch = useDispatch<AppDispatch>();
 
   const { users } = useSelector((state: RootState) => state.user);
-  const { selectedTask, selectedLoadingTask } = useSelector((state: RootState) => state.task);
-  
+  const { selectedTask, selectedLoadingTask } = useSelector(
+    (state: RootState) => state.task,
+  );
+
   /* ================= FETCH DATA ================= */
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchTaskById(id));
+    try {
+      if (id) {
+        dispatch(fetchTaskById(id));
+      }
+      dispatch(fetchUsers());
+    } catch (error) {
+      toast.error("Failed to fetch task details. Please try again.");
     }
-    dispatch(fetchUsers());
   }, [dispatch, id]);
 
   /* ================= PREFILL FORM ================= */
 
-  const task = selectedTask
+  const task = selectedTask;
 
   const selectedUsers = useMemo(() => {
     if (!users || !task) return [];
@@ -53,22 +60,17 @@ const ViewTaskDetails = () => {
     return "in-progress";
   };
 
-if(selectedLoadingTask) {
-  return (
+  if (selectedLoadingTask) {
+    return (
       <div className="w-full h-screen flex justify-center items-center">
         <BeatLoader size={15} color="#2563EB" />
       </div>
-  );
-}
+    );
+  }
 
-
-if (!task) {
-  return (
-    <div className="p-4 text-gray-500">
-      Task not found.
-    </div>
-  );
-}
+  if (!task) {
+    return <div className="p-4 text-gray-500">Task not found.</div>;
+  }
   return (
     <div className="px-2 py-4 bg-white p-4 rounded shadow">
       <div className="flex items-center justify-between mb-4">

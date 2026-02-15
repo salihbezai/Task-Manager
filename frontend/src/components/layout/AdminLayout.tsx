@@ -1,10 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "../ErrorFallback";
 
 const AdminLayout = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -21,7 +24,18 @@ const AdminLayout = () => {
           className={`w-full h-full min-h-screen px-2 py-4 transition-all duration-300 bg-gray-100
             md:ml-64`}
         >
-          <Outlet />
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onReset={() => {
+              navigate("/admin/dashboard");
+              navigate(0); 
+            }}
+            onError={(error,info)=>{
+              console.error("UI Crash: ",error,info)
+            }}
+          >
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { registerUser } from "../../featuers/auth/authActions";
-import {  clearRegisterError } from "../../featuers/auth/authSlice";
+import { clearRegisterError } from "../../featuers/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,15 +32,19 @@ const Signup = () => {
     setFormError(null);
     dispatch(clearRegisterError());
 
-    dispatch(
-      registerUser({
-        name,
-        email,
-        password,
-        profileImageUrl: "",
-        inviteToken: inviteToken,
-      }),
-    );
+    try {
+      dispatch(
+        registerUser({
+          name,
+          email,
+          password,
+          profileImageUrl: "",
+          inviteToken: inviteToken,
+        }),
+      );
+    } catch (error) {
+      toast.error("An error occurred during registration. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -48,9 +53,6 @@ const Signup = () => {
       else navigate("/user/dashboard");
     }
   }, [user, navigate]);
-
-
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

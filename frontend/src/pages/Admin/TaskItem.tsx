@@ -19,7 +19,7 @@ const TaskItem = ({ task }: { task: Task }) => {
   const MAX_VISIBLE_USERS = 3;
   const assignedUsers = task?.assignedTo || [];
   const visibleUsers = users
-    .filter((u) => task.assignedTo?.includes(u._id))
+    .filter((u) => assignedUsers && assignedUsers.includes(u._id))
     .slice(0, MAX_VISIBLE_USERS);
   const extraCount = assignedUsers.length - visibleUsers.length;
 
@@ -109,7 +109,7 @@ const TaskItem = ({ task }: { task: Task }) => {
               {visibleUsers.map((user, index) => (
                 <img
                   key={user._id}
-                  src={`${user.profileImageUrl}`}
+            src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
                   title={user.name}
                   alt={user.name}
                   className={`

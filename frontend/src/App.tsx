@@ -24,7 +24,7 @@ import type { AppDispatch, RootState } from "./store/store";
 import AdminLayout from "./components/layout/AdminLayout";
 import UserLayout from "./components/layout/UserLayout";
 
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UpdateTask from "./pages/Admin/UpdateTask";
 import Profile from "./pages/User/Profile";
@@ -35,7 +35,11 @@ const App = () => {
 
   useEffect(() => {
     const initAuth = async () => {
-      await dispatch(fetchCurrentUser()).unwrap();
+      try {
+        await dispatch(fetchCurrentUser()).unwrap();
+      } catch (error) {
+        toast.error("Failed to fetch user data. Please log in.");
+      }
     };
 
     initAuth();

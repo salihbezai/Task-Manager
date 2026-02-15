@@ -31,9 +31,7 @@ api.interceptors.request.use(
 /* =========================
    RESPONSE INTERCEPTOR
 ========================= */
-
 let isRefreshing = false;
-let refreshPromise: Promise<any> | null = null;
 let failedQueue: {
   resolve: (token: string) => void;
   reject: (err: any) => void;
@@ -51,18 +49,19 @@ const processQueue = (error: any, token: string | null = null) => {
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
-    const originalRequest = error.config;
+    const isAuthRoute =
+      error.config.url?.includes("/login") ||
+      error.config.url?.includes("/refresh") ||
+      error.config.url?.includes("/register");
+      console.log("is auth route "+isAuthRoute)
 
+    const originalRequest = error.config;
     // 🚨 if refresh itself failed → logout
-    if (
-      error.response?.status === 401 &&
-      originalRequest.url === "/auth/refresh"
-    ) {
+    if (error.response?.status === 401 && isAuthRoute) {
       return Promise.reject(error);
     }
 
     if (error.response?.status !== 401) {
-
       return Promise.reject(error);
     }
 

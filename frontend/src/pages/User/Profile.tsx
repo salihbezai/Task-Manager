@@ -23,7 +23,7 @@ const Profile = () => {
     try {
       await dispatch(uploadImage(file)).unwrap();
     } catch (error) {
-      console.error("Upload failed:", error);
+      toast.error("Failed to upload image. Please try again.");
     }
   };
 
@@ -41,7 +41,6 @@ const Profile = () => {
 
       toast.success("Profile updated successfully!");
     } catch (error) {
-      console.error("Upload failed:", error);
       toast.error("Failed to update profile.");
     }
   };
@@ -53,7 +52,7 @@ const Profile = () => {
       <div className="mb-4 flex justify-center">
         <div className="flex flex-col items-center">
           <img
-            src={user?.profileImageUrl}
+            src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
             className="w-30 h-30 mb-1 rounded-full"
             alt="user-avatar"
           />

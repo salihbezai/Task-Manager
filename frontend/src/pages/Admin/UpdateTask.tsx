@@ -24,7 +24,7 @@ const UpdateTask = () => {
     status: "pending",
     dueDate: "",
     assignedTo: [] as string[],
-    todos: [] as { text: string, completed: boolean }[],
+    todos: [] as { text: string; completed: boolean }[],
     attachments: [] as string[],
   };
 
@@ -33,7 +33,7 @@ const UpdateTask = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { users } = useSelector((state: RootState) => state.user);
-  const { selectedTask,selectedLoadingTask,updateTaskLoading } = useSelector(
+  const { selectedTask, selectedLoadingTask, updateTaskLoading } = useSelector(
     (state: RootState) => state.task,
   );
 
@@ -49,8 +49,6 @@ const UpdateTask = () => {
     return new Date(dateString).toISOString().split("T")[0];
   };
 
-
-
   /* ================= FETCH DATA ================= */
 
   useEffect(() => {
@@ -58,31 +56,31 @@ const UpdateTask = () => {
       dispatch(fetchTaskById(id));
     }
     if (!users.length) dispatch(fetchUsers());
-
   }, [dispatch, id, users.length]);
 
   /* ================= PREFILL FORM ================= */
 
   useEffect(() => {
-    if (!selectedTask) return
+    if (!selectedTask) return;
 
     setTask({
       _id: selectedTask._id,
       title: selectedTask.title,
       description: selectedTask.description,
       priority: selectedTask.priority,
-      status: selectedTask.status ,
+      status: selectedTask.status,
       dueDate: selectedTask.dueDate
         ? new Date(selectedTask.dueDate).toISOString().split("T")[0]
         : "",
       assignedTo: selectedTask.assignedTo?.map((_id) => _id) ?? [],
-      todos: selectedTask.todos?.map((t) => ({ text: t.text, completed: t.completed })) ?? [],
+      todos:
+        selectedTask.todos?.map((t) => ({
+          text: t.text,
+          completed: t.completed,
+        })) ?? [],
       attachments: selectedTask.attachments ?? [],
     });
   }, [selectedTask]);
-
-
-  
 
   /* ================= HANDLERS ================= */
 
@@ -93,7 +91,6 @@ const UpdateTask = () => {
   ) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,8 +115,6 @@ const UpdateTask = () => {
     () => users?.filter((user) => task.assignedTo?.includes(user._id)) ?? [],
     [users, task.assignedTo],
   );
-  console.log("the task assgined to "+task.assignedTo)
-  console.log("users "+JSON.stringify(users))
 
   const MAX_VISIBLE_USERS = 3;
   const visibleUsers = selectedUsers.slice(0, MAX_VISIBLE_USERS);
@@ -132,7 +127,10 @@ const UpdateTask = () => {
 
     setTask((prev) => ({
       ...prev,
-      todos: [...prev.todos || [], { text: inputTodo.trim(), completed: false }],
+      todos: [
+        ...(prev.todos || []),
+        { text: inputTodo.trim(), completed: false },
+      ],
     }));
 
     setInputTodo("");
@@ -152,7 +150,7 @@ const UpdateTask = () => {
 
     setTask((prev) => ({
       ...prev,
-      attachments: [...prev.attachments || [], inputAttachment.trim()],
+      attachments: [...(prev.attachments || []), inputAttachment.trim()],
     }));
 
     setInputAttachment("");
@@ -171,28 +169,24 @@ const UpdateTask = () => {
       await dispatch(deleteTask(task._id)).unwrap();
       toast.success("Task deleted successfully");
       navigate("/admin/tasks");
-    } catch (error : unknown) {
+    } catch (error: unknown) {
       toast.error("Failed to delete task");
     } finally {
       setOpen(false);
     }
   };
 
-  if(selectedLoadingTask) {
-  return (
+  if (selectedLoadingTask) {
+    return (
       <div className="w-full h-screen flex justify-center items-center">
         <BeatLoader size={15} color="#2563EB" />
       </div>
-  );
-}
+    );
+  }
 
-if (!selectedTask) {
-  return (
-    <div className="p-4 text-gray-500">
-      Task not found.
-    </div>
-  );
-}
+  if (!selectedTask) {
+    return <div className="p-4 text-gray-500">Task not found.</div>;
+  }
   /* ================= UI ================= */
   return (
     <div className="px-2 py-4">
@@ -296,12 +290,12 @@ if (!selectedTask) {
 
           <div>
             <label className="block font-medium mb-1">Assign to</label>
-            {(task.assignedTo?.length ?? 0)> 0 ? (
+            {(task.assignedTo?.length ?? 0) > 0 ? (
               <div className="flex items-center">
                 {visibleUsers?.map((user, index) => (
                   <img
                     key={user._id}
-                    src={`${user.profileImageUrl}`}
+                    src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
                     title={user.name}
                     onClick={() => setShowAssignModal(true)}
                     className={`w-12 h-12 rounded-full border-2 border-white cursor-pointer ${

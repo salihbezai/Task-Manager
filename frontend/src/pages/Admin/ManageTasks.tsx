@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import {
   downloadTasksCSV,
   fetchAllTasks,
-  getUserTasks
+  getUserTasks,
 } from "../../featuers/task/taskActions";
 import { fetchUsers } from "../../featuers/user/userActions";
 import { toast } from "react-toastify";
@@ -49,35 +49,41 @@ const FilterButton = ({
 
 const ManageTasks = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { tasks } = useSelector(
-    (state: RootState) => state.task,
-  );
+  const { tasks } = useSelector((state: RootState) => state.task);
   const { user } = useSelector((state: RootState) => state.auth);
-  const { users } = useSelector(
-    (state: RootState) => state.user,
-  );
-
+  const { users } = useSelector((state: RootState) => state.user);
 
   const [activeFilter, setActiveFilter] = useState("all");
 
   // fetch tasks
   useEffect(() => {
-    if(user?.role==="admin"){
-      if (tasks.length === 0) {
-        dispatch(fetchAllTasks());
+    if (user?.role === "admin") {
+      try {
+        if (tasks.length === 0) {
+          dispatch(fetchAllTasks());
+        }
+      } catch (error) {
+        toast.error("Failed to fetch tasks. Please try again.");
       }
-    }else{
-      if(tasks.length===0){
-        dispatch(getUserTasks())
+    } else {
+      try {
+        if (tasks.length === 0) {
+          dispatch(getUserTasks());
+        }
+      } catch (error) {
+        toast.error("Failed to fetch tasks. Please try again.");
       }
     }
-  
   }, [dispatch, tasks.length, user?.role]);
 
   // fetch users
   useEffect(() => {
-    if (users.length === 0) {
-      dispatch(fetchUsers());
+    try {
+      if (users.length === 0) {
+        dispatch(fetchUsers());
+      }
+    } catch (error) {
+      toast.error("Failed to fetch users. Please try again.");
     }
   }, [dispatch, users.length]);
 
@@ -143,19 +149,16 @@ const ManageTasks = () => {
             onClick={setActiveFilter}
           />
           {/* download report button */}
-          {
-            user?.role==="admin" && (
-          <div className="ml-4">
-            <button
-              onClick={handlDownloadReport}
-              className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
-            >
-              Download Report
-            </button>
-          </div>
-            )
-          }
-
+          {user?.role === "admin" && (
+            <div className="ml-4">
+              <button
+                onClick={handlDownloadReport}
+                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
+              >
+                Download Report
+              </button>
+            </div>
+          )}
         </div>
       </div>
       {filteredTasks.length === 0 && (

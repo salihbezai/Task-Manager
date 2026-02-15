@@ -7,14 +7,16 @@ import { toast } from "react-toastify";
 
 const ManageUsers = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { users } = useSelector(
-    (state: RootState) => state.user
-  );
+  const { users } = useSelector((state: RootState) => state.user);
 
   // fetch users on component mount
   useEffect(() => {
-    if (users.length === 0) {
-      dispatch(fetchUsers());
+    try {
+      if (users.length === 0) {
+        dispatch(fetchUsers());
+      }
+    } catch (error) {
+      toast.error("Failed to fetch users. Please try again.");
     }
   }, [dispatch, users.length]);
 

@@ -20,13 +20,13 @@ import {
 } from "../../featuers/task/taskActions";
 import type { AppDispatch, RootState } from "../../store/store";
 import type { Task } from "../../featuers/task/taskTypes";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const { totalTasks, completedTasks, pendingTasks, inProgressTasks, tasks } =
     useSelector((state: RootState) => state.task);
-
   // ⬅️ Pagination State
   const [page, setPage] = useState(1);
   const pageSize = 5;
@@ -34,22 +34,29 @@ const Dashboard = () => {
 
   // fetch dashboard data
   useEffect(() => {
-    if(user?.role==="admin"){
+    if (user?.role === "admin") {
       dispatch(getDashboardData());
-    }else{
+    } else {
       dispatch(getUserDashboardData());
     }
   }, [dispatch, user?.role]);
 
   // fetch all tasks
   useEffect(() => {
-    if(user?.role==="admin"){
-          dispatch(fetchAllTasks());
-     
-    }else{
+    if (user?.role === "admin") {
+      try {
+        dispatch(fetchAllTasks());
+      } catch (error) {
+        toast.error("Failed to fetch tasks. Please try again.");
+      }
+    } else {
+      try {
         dispatch(getUserTasks());
+      } catch (error) {
+        toast.error("Failed to fetch tasks. Please try again.");
+      }
     }
-  }, [dispatch,user?.role, tasks.length]);
+  }, [dispatch, user?.role, tasks.length]);
 
   const paginatedTasks = useMemo(() => {
     const start = (page - 1) * pageSize;
