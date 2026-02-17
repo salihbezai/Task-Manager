@@ -116,51 +116,54 @@ const ManageTasks = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">My Tasks</h1>
-        {/* Filter tasks on status nav  */}
-        <div className="flex">
-          <FilterButton
-            label="All"
-            value="all"
-            count={allCount}
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
-          />
-          <FilterButton
-            label="Completed"
-            value="completed"
-            count={completedCount}
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
-          />
-          <FilterButton
-            label="In Progress"
-            value="in-progress"
-            count={inProgressCount}
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
-          />
-          <FilterButton
-            label="Pending"
-            value="pending"
-            count={pendingCount}
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
-          />
-          {/* download report button */}
-          {user?.role === "admin" && (
-            <div className="ml-4">
-              <button
-                onClick={handlDownloadReport}
-                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
-              >
-                Download Report
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+   <div className="flex flex-col mb-4">
+  {/* Header */}
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <h1 className="text-2xl font-bold">My Tasks</h1>
+
+    {user?.role === "admin" && (
+      <button
+        onClick={handlDownloadReport}
+        className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm w-full sm:w-auto"
+      >
+        Download Report
+      </button>
+    )}
+  </div>
+
+  {/* Filters */}
+  <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide">
+    <FilterButton
+      label="All"
+      value="all"
+      count={allCount}
+      activeFilter={activeFilter}
+      onClick={setActiveFilter}
+    />
+    <FilterButton
+      label="Completed"
+      value="completed"
+      count={completedCount}
+      activeFilter={activeFilter}
+      onClick={setActiveFilter}
+    />
+    <FilterButton
+      label="In Progress"
+      value="in-progress"
+      count={inProgressCount}
+      activeFilter={activeFilter}
+      onClick={setActiveFilter}
+    />
+    <FilterButton
+      label="Pending"
+      value="pending"
+      count={pendingCount}
+      activeFilter={activeFilter}
+      onClick={setActiveFilter}
+    />
+  </div>
+</div>
+
       {filteredTasks.length === 0 && (
         <div
           className="flex  w-full  items-center justify-center text-center

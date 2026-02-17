@@ -45,8 +45,8 @@ const Login = () => {
   }, [navigate, user]);
 
   return (
-    <div className="min-h-screen  flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-xl">
+<div className="min-h-screen bg-gray-100 flex justify-center md:items-center px-4 py-8">
+      <div className="w-full  max-w-md bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-xl">
         <div className="text-center mb-6">
           <h1 className="text-4xl font-extrabold text-blue-700 tracking-wide">
             Task Manager

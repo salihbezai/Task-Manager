@@ -1,4 +1,10 @@
 
+export interface AssignedUser {
+  _id: string;
+  name: string;
+  email: string;
+  profileImageUrl: string;
+}
 export interface Task {
   _id: string;
   title: string;
@@ -6,7 +12,7 @@ export interface Task {
   priority?: "low" | "medium" | "high";
   status: "pending" | "in-progress" | "completed";
   dueDate?: Date;
-  assignedTo?: string[];
+  assignedTo?: AssignedUser[];
   createdBy?: string;
   attachments?: string[];
   todos: { text: string; completed: boolean }[];

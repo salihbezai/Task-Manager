@@ -180,16 +180,14 @@ const Dashboard = () => {
       <div className="bg-white shadow-md rounded-xl p-4">
         <h2 className="font-semibold mb-3">Recent Tasks</h2>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+  <div className="overflow-x-auto rounded-xl border bg-white">
+  <table className="w-full text-sm min-w-150">
             <thead>
               <tr className="text-left text-gray-600">
-                <th className="py-2">Task</th>
-                {/* <th>Assigned To</th> */}
-                {/* <th>CreatedBy</th> */}
-                <th>Status</th>
-                <th>Priority</th>
-                <th>Created On</th>
+                <th className="py-3 px-4">Task</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Priority</th>
+                <th className="py-3 px-4">Created On</th>
               </tr>
             </thead>
 
@@ -200,17 +198,6 @@ const Dashboard = () => {
                   className="border-b last:border-none hover:bg-gray-50"
                 >
                   <td className="py-2">{t.title}</td>
-                  {/* <td className="flex py-2 flex-row items-center justify-center space-between gap-1">
-                    {
-                      t.assignedTo?.map((a: any, i: number) => (
-                        <div key={i} className="flex flex-row items-center cursor-pointer">
-                          <img src={`http://localhost:5000/uploads/${a.profileImageUrl}`}
-                           alt={a.name} className="w-8 h-8 rounded-full cursor-pointer" />
-                        </div>
-                      ))
-                    }
-                  </td> */}
-                  {/* <td className="py-2">{t.createdBy?.name}</td> */}
                   <td className="py-2">
                     <span
                       className={`px-2 py-1 rounded text-xs

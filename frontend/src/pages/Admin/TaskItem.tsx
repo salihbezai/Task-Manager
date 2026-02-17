@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 const TaskItem = ({ task }: { task: Task }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { users } = useSelector((state: RootState) => state.user);
 
   const totalTodos = task && task.todos.length;
   const completedTodos = task && task.todos.filter((t) => t.completed).length;
@@ -18,11 +17,9 @@ const TaskItem = ({ task }: { task: Task }) => {
   // assigned users display logic
   const MAX_VISIBLE_USERS = 3;
   const assignedUsers = task?.assignedTo || [];
-  const visibleUsers = users
-    .filter((u) => assignedUsers && assignedUsers.includes(u._id))
-    .slice(0, MAX_VISIBLE_USERS);
+  const visibleUsers = assignedUsers.slice(0, MAX_VISIBLE_USERS);
   const extraCount = assignedUsers.length - visibleUsers.length;
-
+console.log("assigned users "+JSON.stringify(assignedUsers))
   return (
     <div
       className="w-full bg-white px-3 py-3 rounded-sm shadow-lg 
@@ -109,7 +106,7 @@ const TaskItem = ({ task }: { task: Task }) => {
               {visibleUsers.map((user, index) => (
                 <img
                   key={user._id}
-            src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
+                  src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
                   title={user.name}
                   alt={user.name}
                   className={`

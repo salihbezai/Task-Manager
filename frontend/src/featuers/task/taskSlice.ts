@@ -91,6 +91,7 @@ const taskSlice = createSlice({
     builder.addCase(fetchAllTasks.fulfilled, (state, action) => {
       state.loading = false;
       state.tasks = action.payload;
+      console.log("the tasks "+JSON.stringify(action.payload))
       state.error = null;
     });
     builder.addCase(fetchAllTasks.rejected, (state, action) => {

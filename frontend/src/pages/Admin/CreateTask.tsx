@@ -195,7 +195,7 @@ const CreateTask = () => {
                   {visibleUsers.map((user, index) => (
                     <img
                       key={user._id}
-                      src={`http://localhost:5000/uploads/${user.profileImageUrl}`}
+                      src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
                       title={user.name}
                       onClick={() => setShowAssignModal(true)}
                       className={`

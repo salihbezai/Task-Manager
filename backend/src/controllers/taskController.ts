@@ -148,6 +148,9 @@ export const getTasks = async (req: Request, res: Response): Promise<void> => {
     const tasks = await Task.find().populate(
       "createdBy",
       "name email profileImageUrl",
+    ).populate(
+      "assignedTo",
+      "name email profileImageUrl",
     );
     res.status(200).json({ tasks });
   } catch (error) {
