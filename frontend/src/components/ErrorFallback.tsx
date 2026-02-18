@@ -2,7 +2,7 @@ import type { FallbackProps } from "react-error-boundary";
 
 
 
-const ErrorFallback = ({error,resetErrorBoundary}:FallbackProps)=>{
+const ErrorFallback = ({error: _,resetErrorBoundary}:FallbackProps)=>{
 return (
     <div className="flex flex-col items-center justify-center h-screen">
       <h1 className="text-2xl font-bold mb-4">Something went wrong.</h1>

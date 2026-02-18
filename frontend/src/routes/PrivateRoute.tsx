@@ -7,7 +7,7 @@ import { BeatLoader } from "react-spinners";
 interface PrivatRouteProps {
   allowedRoles: string[];
 }
-const PrivateRoute = ({ allowedRoles }: PrivatRouteProps) => {
+const PrivateRoute = ({ allowedRoles:_ }: PrivatRouteProps) => {
   const { user, loading } = useSelector((state: RootState) => state.auth);
   if (loading) {
     return (

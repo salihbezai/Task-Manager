@@ -29,8 +29,7 @@ test.env
 .DS_Store
 Thumbs.db
 
-# ignore uploads folder
-uploads/
+
 
 #ignore errors log file
 errors.log

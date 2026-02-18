@@ -100,7 +100,7 @@ const authSlice = createSlice({
       state.loading = true;
     });
 
-    builder.addCase(refreshToken.fulfilled, (state, action) => {
+    builder.addCase(refreshToken.fulfilled, (state) => {
       state.loading = false;
       state.initialized = true;
     });

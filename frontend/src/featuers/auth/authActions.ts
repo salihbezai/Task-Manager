@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { getErrorMessage } from "../../utils/errorHelper";
 import type { loginResponse, registerResponse, userType } from "./userTypes";
-import { clearAccessToken, getAccessToken, setAccessToken } from "../../api/tokenService";
+import { clearAccessToken, setAccessToken } from "../../api/tokenService";
 
 
 

@@ -37,10 +37,18 @@ const ViewTaskDetails = () => {
 
   const task = selectedTask;
 
-  const selectedUsers = useMemo(() => {
-    if (!users || !task) return [];
-    return users.filter((user) => task.assignedTo?.includes(user._id));
-  }, [users, task]);
+const selectedUsers = useMemo(() => {
+  if (!users || !task) return [];
+
+  // Convert assignedTo array to IDs (string[])
+  const assignedIds: string[] = task.assignedTo?.map(u => {
+    // u might be AssignedUser or string, handle both
+    return typeof u === "string" ? u : u._id;
+  }) ?? [];
+
+  return users.filter(user => assignedIds.includes(user._id));
+}, [users, task]);
+
 
   const MAX_VISIBLE_USERS = 3;
   const visibleUsers = selectedUsers.slice(0, MAX_VISIBLE_USERS);

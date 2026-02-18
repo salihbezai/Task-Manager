@@ -6,7 +6,7 @@ import {
 } from "./tokenService";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -53,7 +53,6 @@ api.interceptors.response.use(
       error.config.url?.includes("/login") ||
       error.config.url?.includes("/refresh") ||
       error.config.url?.includes("/register");
-      console.log("is auth route "+isAuthRoute)
 
     const originalRequest = error.config;
     // 🚨 if refresh itself failed → logout
@@ -70,7 +69,6 @@ api.interceptors.response.use(
     }
 
     if (isRefreshing) {
-      console.log("if it is refreshing don't do it");
       return new Promise((resolve, reject) => {
         failedQueue.push({
           resolve: (token: string) => {

@@ -67,7 +67,6 @@ const createTask = createAsyncThunk<Task, CreateTaskPayload, { rejectValue: stri
   async (task: CreateTaskPayload, { rejectWithValue }) => {
     try {
       const { data } = await api.post("/tasks/create", task);
-      console.log("the tasks added is "+JSON.stringify(data))
       return data;
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
@@ -80,7 +79,6 @@ const fetchTaskById = createAsyncThunk<Task, string, { rejectValue: string }>(
   async (id: string, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/tasks/${id}`);
-      console.log("the task id "+JSON.stringify(data))
       return data.task;
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));

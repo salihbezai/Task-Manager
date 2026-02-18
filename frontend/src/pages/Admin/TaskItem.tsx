@@ -19,7 +19,6 @@ const TaskItem = ({ task }: { task: Task }) => {
   const assignedUsers = task?.assignedTo || [];
   const visibleUsers = assignedUsers.slice(0, MAX_VISIBLE_USERS);
   const extraCount = assignedUsers.length - visibleUsers.length;
-console.log("assigned users "+JSON.stringify(assignedUsers))
   return (
     <div
       className="w-full bg-white px-3 py-3 rounded-sm shadow-lg 

@@ -103,14 +103,16 @@ export const register = async (req: Request, res: Response) => {
     res.cookie("refreshToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
+
     res.status(201).json({ user, token: accessToken });
   } catch (error) {
     const err = error as Error;
     logger.error({
       message: "Error during registration",
-      error: (err).message,
-      stack: (err).stack,
+      error: err.message,
+      stack: err.stack,
       route: req.originalUrl,
     });
     res.status(500).json({ message: "Server error during registration." });
@@ -174,6 +176,7 @@ export const login = async (req: Request, res: Response) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     res.status(200).json({ user: response, token: accessToken });
   } catch (error) {
@@ -187,8 +190,6 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const refresh = async (req: Request, res: Response) => {
   try {
     const GRACE_MS = 30 * 1000; // 30 seconds grace
@@ -196,7 +197,9 @@ export const refresh = async (req: Request, res: Response) => {
 
     const oldToken = req.cookies.refreshToken;
     if (!oldToken) {
-      return res.status(401).json({ message: "You are not logged in, please log in and try again." });
+      return res.status(401).json({
+        message: "You are not logged in, please log in and try again.",
+      });
     }
 
     //  Verify JWT signature
@@ -204,7 +207,9 @@ export const refresh = async (req: Request, res: Response) => {
     try {
       payload = jwt.verify(oldToken, JWT_SECRET) as JWTPayload;
     } catch {
-      return res.status(401).json({ message: "You are not logged in, please log in and try again." });
+      return res.status(401).json({
+        message: "You are not logged in, please log in and try again.",
+      });
     }
 
     //  Find user containing this refresh token
@@ -214,7 +219,9 @@ export const refresh = async (req: Request, res: Response) => {
     );
 
     if (!user) {
-      return res.status(401).json({ message: "You are not logged in, please log in and try again." });
+      return res.status(401).json({
+        message: "You are not logged in, please log in and try again.",
+      });
     }
     //  Validate token & grace period
     const now = new Date();
@@ -251,16 +258,15 @@ export const refresh = async (req: Request, res: Response) => {
     user.refreshTokens = user.refreshTokens.filter(
       (t) => t.expiresAt > new Date(),
     );
-   
+
     await user.save();
 
     //  Set cookie
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
-
     //  Respond
     res.status(200).json({
       user: {
@@ -319,7 +325,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     const user = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
     });
-    console.log("the udpate data "+JSON.stringify(updateData))
+    console.log("the udpate data " + JSON.stringify(updateData));
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -359,7 +365,6 @@ export const logout = async (req: Request, res: Response) => {
       );
       await user.save();
     }
-    console.log("logging out ...");
     res.clearCookie("refreshToken");
     res.status(200).json({ message: "Logout successful." });
   }

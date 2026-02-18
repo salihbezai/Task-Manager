@@ -109,7 +109,6 @@ const ManageTasks = () => {
     try {
       await dispatch(downloadTasksCSV()).unwrap();
     } catch (error) {
-      console.log("error " + error);
       toast.error("Failed to download report");
     }
   };

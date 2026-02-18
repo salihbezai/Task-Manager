@@ -72,7 +72,10 @@ const UpdateTask = () => {
       dueDate: selectedTask.dueDate
         ? new Date(selectedTask.dueDate).toISOString().split("T")[0]
         : "",
-      assignedTo: selectedTask.assignedTo?.map((_id) => _id) ?? [],
+      assignedTo:
+        selectedTask.assignedTo
+          ?.filter((user) => user?._id)
+          .map((user) => user._id) ?? [],
       todos:
         selectedTask.todos?.map((t) => ({
           text: t.text,

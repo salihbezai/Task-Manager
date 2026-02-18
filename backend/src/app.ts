@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend URL
+    origin: "https://task-manager-frontend-wa9r.vercel.app", // your frontend URL
     credentials: true, // allow cookies
   }),
 );

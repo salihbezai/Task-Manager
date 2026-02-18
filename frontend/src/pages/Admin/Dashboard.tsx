@@ -180,7 +180,7 @@ const Dashboard = () => {
       <div className="bg-white shadow-md rounded-xl p-4">
         <h2 className="font-semibold mb-3">Recent Tasks</h2>
 
-  <div className="overflow-x-auto rounded-xl border bg-white">
+  <div className="overflow-x-auto rounded-xl  bg-white">
   <table className="w-full text-sm min-w-150">
             <thead>
               <tr className="text-left text-gray-600">
