@@ -94,7 +94,7 @@ const Sidebar = ({
           {/* USER SECTION */}
           <div className="flex flex-col items-center">
             <img
-            src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
+            src={`${user?.profileImageUrl}`}
               className="w-18 h-18 rounded-full"
             />
 

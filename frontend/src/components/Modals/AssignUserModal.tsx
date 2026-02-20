@@ -38,7 +38,7 @@ const AssignUsersModal: React.FC<Props> = ({
                 ${selected.includes(user._id) ? "bg-blue-100 border-blue-400" : ""}`}
             >
               <img
-            src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
+            src={`${user?.profileImageUrl}`}
                 className="w-8 h-8 rounded-full"
               />
               <div>

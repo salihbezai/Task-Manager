@@ -129,7 +129,7 @@ const selectedUsers = useMemo(() => {
                   {visibleUsers.map((user, index) => (
                     <img
                       key={user._id}
-                      src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
+                      src={`${user?.profileImageUrl}`}
                       title={user.name}
                       alt={user.name}
                       className={`

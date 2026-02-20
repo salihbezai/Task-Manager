@@ -193,7 +193,9 @@ export const getTaskById = async (
 ): Promise<void> => {
   const { id } = req.params;
   try {
-    const task = await Task.findById(id);
+    const task = await Task.findById(id)
+      .populate("createdBy", "name email profileImageUrl")
+      .populate("assignedTo", "_id name email profileImageUrl");
     if (!task) {
       res.status(404).json({ message: "Task not found" });
       return;

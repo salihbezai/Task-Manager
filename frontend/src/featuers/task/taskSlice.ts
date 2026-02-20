@@ -134,6 +134,7 @@ const taskSlice = createSlice({
     });
     builder.addCase(fetchTaskById.fulfilled, (state, action:PayloadAction<Task>) => {
       state.selectedLoadingTask = false;
+      console.log("the action paylad is "+JSON.stringify(action.payload))
       state.selectedTask = action.payload;
       state.selectedErrorTask = null;
     });

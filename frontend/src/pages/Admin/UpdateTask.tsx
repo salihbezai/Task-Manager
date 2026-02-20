@@ -115,8 +115,8 @@ const UpdateTask = () => {
   /* ================= USERS ================= */
 
   const selectedUsers = useMemo(
-    () => users?.filter((user) => task.assignedTo?.includes(user._id)) ?? [],
-    [users, task.assignedTo],
+    () => users.filter((user) => task.assignedTo?.includes(user._id)),
+    [task.assignedTo, users],
   );
 
   const MAX_VISIBLE_USERS = 3;
@@ -298,7 +298,7 @@ const UpdateTask = () => {
                 {visibleUsers?.map((user, index) => (
                   <img
                     key={user._id}
-                    src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
+                    src={`${user?.profileImageUrl}`}
                     title={user.name}
                     onClick={() => setShowAssignModal(true)}
                     className={`w-12 h-12 rounded-full border-2 border-white cursor-pointer ${

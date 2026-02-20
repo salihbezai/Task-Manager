@@ -18,12 +18,12 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://task-manager-frontend-wa9r.vercel.app", // your frontend URL
+    origin: "http://localhost:5173", // your frontend URL
     credentials: true, // allow cookies
   }),
 );
 
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 import dotenv from "dotenv";
 

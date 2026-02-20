@@ -52,7 +52,7 @@ const Profile = () => {
       <div className="mb-4 flex justify-center">
         <div className="flex flex-col items-center">
           <img
-            src={`${import.meta.env.VITE_API_BASE_URL}${user?.profileImageUrl}`}
+            src={`${user?.profileImageUrl}`}
             className="w-30 h-30 mb-1 rounded-full"
             alt="user-avatar"
           />
