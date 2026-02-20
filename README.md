@@ -10,6 +10,13 @@ This project follows clean architecture principles, normalized state management,
 
 ## ✨ Features
 
+🚀 Deployment
+### Backend (Render)
+- https://task-manager-backend-d3w0.onrender.com
+### Frontend (Vercel)
+- https://task-manager-frontend-eight-sable.vercel.app
+
+
 ### 🔐 Authentication
 - Users can register and login to the application.  
 - Access tokens are short-lived JSON Web Tokens (JWT) used to protect backend routes.  
