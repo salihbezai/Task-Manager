@@ -10,7 +10,7 @@ This project follows clean architecture principles, normalized state management,
 
 ## ✨ Features
 
-🚀 Deployment
+### 🚀 Deployment
 ### Backend (Render)
 - https://task-manager-backend-d3w0.onrender.com
 ### Frontend (Vercel)
