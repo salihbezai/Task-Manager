@@ -204,7 +204,7 @@ export const getTaskById = async (
     const isOwner =
       task.createdBy?.toString() === req.user?.id ||
       req.user?.role === "admin" ||
-      task.assignedTo?.some((id) => id.toString() === req.user?.id);
+      task.assignedTo?.some((user) => user._id.toString() === req.user?.id);
     if (!isOwner) {
       res
         .status(403)
