@@ -64,6 +64,7 @@ This project follows clean architecture principles, normalized state management,
 - JWT Authentication
 - Bcrypt
 - Winston Logger
+- Cloudinary (image storage)
 
 ### Frontend
 - React
